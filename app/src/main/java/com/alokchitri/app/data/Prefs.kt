@@ -20,9 +20,15 @@ class Prefs(context: Context) {
         get() = sp.getBoolean(KEY_UNLOCKED, false)
         set(value) = sp.edit().putBoolean(KEY_UNLOCKED, value).apply()
 
+    /** Debug builds only: treat the camera as manual-capable, so the full flow can be tried on an emulator. */
+    var simulateProMode: Boolean
+        get() = sp.getBoolean(KEY_SIMULATE_PRO, false)
+        set(value) = sp.edit().putBoolean(KEY_SIMULATE_PRO, value).apply()
+
     private companion object {
         const val KEY_SETUP_DONE = "setup_done"
         const val KEY_PHONE_NAME = "phone_name"
         const val KEY_UNLOCKED = "unlocked"
+        const val KEY_SIMULATE_PRO = "debug_simulate_pro"
     }
 }

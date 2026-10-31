@@ -29,7 +29,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    buildFeatures { compose = true }
+    buildFeatures {
+        compose = true
+        buildConfig = true // BuildConfig.DEBUG gates the emulator-only Settings switch
+    }
 }
 
 kotlin {
