@@ -20,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.abs
 
 data class FlowState(
     /** Null until the probe has run; the Setup screen shows a placeholder meanwhile. */
@@ -40,7 +41,7 @@ data class FlowState(
 
 /**
  * Holds the "new shot" flow: goal -> light reading -> recommendation -> floating card ticks.
- * TODO: replace [onLightReading] callers with the Camera2 AE callback (see camera/AeMeterCallback.kt).
+ * [onLightReading] is fed by camera/Camera2PreviewHost while the Meter screen is open.
  */
 class FlowViewModel(app: Application) : AndroidViewModel(app) {
     private val prefs = Prefs(app)
@@ -73,7 +74,8 @@ class FlowViewModel(app: Application) : AndroidViewModel(app) {
 
     fun onLightReading(rawEv100: Double, colorTempK: Int? = null) {
         val smoothed = smoother.add(rawEv100)
-        _state.update { it.copy(ev100 = smoothed, colorTempK = colorTempK) }
+        // Frames arrive ~30 times a second; a tenth of a stop is below anything the engine or gauge resolves.
+        _state.update { if (abs(it.ev100 - smoothed) < 0.1 && it.colorTempK == colorTempK) it else it.copy(ev100 = smoothed, colorTempK = colorTempK) }
     }
 
     fun toggleChecked(index: Int) = _state.update {

@@ -153,4 +153,9 @@
     <string name="picker_model_hint">For example Redmi Note 13. See Settings › About phone</string>
     <string name="picker_save">Save</string>
     <string name="setup_detecting">Finding your phone…</string>
+    <string name="meter_cam_denied">To measure light we need the camera. Nothing is photographed or saved, we only read the brightness.</string>
+    <string name="meter_cam_busy">Another app is using the camera. Close it and try again.</string>
+    <string name="meter_open_settings">Open settings</string>
+    <string name="meter_retry">Try again</string>
+    <string name="meter_no_reading">The light reading shows here once the camera is on.</string>
 </resources>

@@ -24,6 +24,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.alokchitri.app.camera.Camera2PreviewHost
 import com.alokchitri.app.data.SampleData
 import com.alokchitri.app.overlay.FloatingCardService
 import com.alokchitri.app.ui.FlowViewModel
@@ -180,12 +181,14 @@ fun AlokApp(
             }
 
             composable(Routes.METER) {
+                var cameraLive by remember { mutableStateOf(false) }
                 MeterScreen(
                     goal = state.goal,
                     level = LightMeter.levelOf(state.ev100),
                     onBack = { nav.popBackStack() },
                     onDone = { nav.navigate(Routes.RECOMMEND) },
-                    // TODO: preview = { Camera2PreviewHost(onFrameEv = flow::onLightReading) }
+                    showGauge = cameraLive,
+                    preview = { Camera2PreviewHost(onFrameEv = { flow.onLightReading(it) }, onCameraReady = { cameraLive = it }) },
                 )
             }
 
