@@ -150,7 +150,7 @@ fun UpgradeScreen(
         Spacer(Modifier.height(12.dp))
         Box(Modifier.fillMaxWidth().clickable(onClick = onGiftCardGuide)) {
             Column {
-                InfoBanner(Icons.Outlined.CreditCard, AlokColors.Green, stringResource(R.string.giftcard_title) + " " + stringResource(R.string.giftcard_sub))
+                InfoBanner(Icons.Outlined.CreditCard, AlokColors.Green, stringResource(R.string.giftcard_sub))
             }
         }
     }

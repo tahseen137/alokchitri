@@ -52,11 +52,13 @@ import com.alokchitri.app.ui.screens.HomeScreen
 import com.alokchitri.app.ui.screens.HowToScreen
 import com.alokchitri.app.ui.screens.HowToStep
 import com.alokchitri.app.ui.screens.MeterScreen
+import com.alokchitri.app.ui.screens.PaymentGuideScreen
 import com.alokchitri.app.ui.screens.PhoneBrand
 import com.alokchitri.app.ui.screens.PhonePickerDialog
 import com.alokchitri.app.ui.screens.RecipesScreen
 import com.alokchitri.app.ui.screens.SaveRecipeDialog
 import com.alokchitri.app.ui.screens.RecommendScreen
+import com.alokchitri.app.ui.screens.SettingsScreen
 import com.alokchitri.app.ui.screens.SetupScreen
 import com.alokchitri.app.ui.screens.UpgradeOffer
 import com.alokchitri.app.ui.screens.UpgradeScreen
@@ -78,6 +80,8 @@ object Routes {
     const val FEEDBACK = "feedback"
     const val RECIPES = "recipes"
     const val UPGRADE = "upgrade"
+    const val SETTINGS = "settings"
+    const val PAYMENT_GUIDE = "payment_guide"
 }
 
 private val TAB_ROUTES = mapOf(
@@ -218,7 +222,7 @@ fun AlokApp(
                     freeTotal = feedback.quota.dailyLimit,
                     lastRecipe = recipes.firstOrNull(),
                     onNewShot = { nav.navigate(Routes.GOAL) },
-                    onSettings = { nav.navigate(Routes.UPGRADE) }, // TODO: real settings screen
+                    onSettings = { nav.navigate(Routes.SETTINGS) },
                 )
             }
 
@@ -296,6 +300,32 @@ fun AlokApp(
                 )
             }
 
+            composable(Routes.SETTINGS) {
+                val restoring = stringResource(R.string.settings_restoring)
+                val version = remember {
+                    runCatching { context.packageManager.getPackageInfo(context.packageName, 0).versionName }.getOrNull().orEmpty()
+                }
+                SettingsScreen(
+                    language = language,
+                    onLanguageChange = onLanguageChange,
+                    phoneName = state.phoneName.orEmpty(),
+                    unlocked = billing.unlocked,
+                    version = version,
+                    onBack = { nav.popBackStack() },
+                    onChangePhone = { showPhonePicker = true },
+                    onUpgrade = { nav.navigate(Routes.UPGRADE) },
+                    onRestorePurchases = {
+                        feedback.billing.connect() // re-reads owned purchases from Play
+                        Toast.makeText(context, restoring, Toast.LENGTH_SHORT).show()
+                    },
+                    onPaymentGuide = { nav.navigate(Routes.PAYMENT_GUIDE) },
+                )
+            }
+
+            composable(Routes.PAYMENT_GUIDE) {
+                PaymentGuideScreen(onBack = { nav.popBackStack() }, onDone = { nav.popBackStack() })
+            }
+
             composable(Routes.UPGRADE) {
                 LaunchedEffect(Unit) { feedback.billing.connect() } // fresh prices and purchases each time it opens
                 UpgradeScreen(
@@ -308,7 +338,7 @@ fun AlokApp(
                     onClose = { nav.popBackStack() },
                     onBuy = { context.findActivity()?.let { feedback.billing.buy(it, AppConfig.PRODUCT_UNLOCK) } },
                     onBuyTopUp = { context.findActivity()?.let { feedback.billing.buy(it, AppConfig.PRODUCT_TOPUP) } },
-                    onGiftCardGuide = { /* TODO: bKash gift-card guide screen */ },
+                    onGiftCardGuide = { nav.navigate(Routes.PAYMENT_GUIDE) },
                     onRetry = { feedback.billing.connect() },
                 )
             }

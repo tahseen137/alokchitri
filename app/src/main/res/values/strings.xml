@@ -142,8 +142,7 @@
     <string name="upgrade_play">Google Play দিয়ে পেমেন্ট</string>
     <string name="topup_title">ফিডব্যাক টপ-আপ</string>
     <string name="topup_sub">দৈনিক সীমার বাইরে বাড়তি দরকার হলে</string>
-    <string name="giftcard_title">কার্ড নেই?</string>
-    <string name="giftcard_sub">বিকাশ দিয়ে Google Play গিফট কার্ড কেনার গাইড দেখুন</string>
+    <string name="giftcard_sub">কার্ড নেই? কার্ড ছাড়া Google Play-তে পেমেন্টের উপায় দেখুন</string>
     <string name="picker_title">আপনার ফোন বেছে নিন</string>
     <string name="picker_other_brand">অন্য ব্র্যান্ড</string>
     <string name="picker_brand_label">ব্র্যান্ড</string>
@@ -178,4 +177,21 @@
     <string name="upgrade_unlocked_sub">ধন্যবাদ! দিনে প্রায় ২০টি ফিডব্যাক আর রেসিপি সেভ করা চালু আছে।</string>
     <string name="topup_pack_fmt" formatted="true">%1$s · %2$sটি</string>
     <string name="feedback_no_ad">এই মুহূর্তে কোনো বিজ্ঞাপন নেই। একটু পরে আবার চেষ্টা করুন।</string>
+    <string name="settings_title">সেটিংস</string>
+    <string name="settings_language">ভাষা</string>
+    <string name="settings_phone">আপনার ফোন</string>
+    <string name="settings_unlock">লাইফটাইম আনলক</string>
+    <string name="settings_not_unlocked">এখনও কেনা হয়নি</string>
+    <string name="settings_restore">আগের কেনাকাটা ফিরিয়ে আনুন</string>
+    <string name="settings_restoring">Google Play-তে আপনার কেনাকাটা খোঁজা হচ্ছে…</string>
+    <string name="settings_payment_guide">কার্ড ছাড়া পেমেন্ট</string>
+    <string name="payguide_title">কার্ড ছাড়া Google Play-তে পেমেন্ট</string>
+    <string name="payguide_sub">ব্যাংক কার্ড না থাকলেও কেনা যায়। আপনার অ্যাকাউন্টে কোন উপায় আছে, Google Play নিজেই দেখায়।</string>
+    <string name="payguide_1">Play Store খুলে ওপরে ডানে আপনার প্রোফাইল ছবিতে চাপুন</string>
+    <string name="payguide_2">“পেমেন্ট ও সাবস্ক্রিপশন” › “পেমেন্টের পদ্ধতি” খুলুন</string>
+    <string name="payguide_3">তালিকায় যে উপায় আছে (যেমন বিকাশ বা মোবাইল ব্যালান্স) সেটি যোগ করুন</string>
+    <string name="payguide_4">গিফট কার্ডের কোড থাকলে “পেমেন্ট ও সাবস্ক্রিপশন” › “গিফট কোড রিডিম করুন”-এ কোডটি দিন</string>
+    <string name="payguide_note">এরপর এই অ্যাপে ফিরে আনলক চাপুন। পেমেন্টের সময় যোগ করা উপায়টি বেছে নিন।</string>
+    <string name="payguide_cta">বুঝেছি</string>
+    <string name="settings_version_fmt" formatted="true">সংস্করণ %1$s</string>
 </resources>

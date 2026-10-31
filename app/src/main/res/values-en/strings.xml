@@ -142,8 +142,7 @@
     <string name="upgrade_play">Paid through Google Play</string>
     <string name="topup_title">Feedback top-up</string>
     <string name="topup_sub">When you need more than the daily limit</string>
-    <string name="giftcard_title">No card?</string>
-    <string name="giftcard_sub">See how to buy a Google Play gift card with bKash</string>
+    <string name="giftcard_sub">No card? See how to pay on Google Play without one</string>
     <string name="picker_title">Choose your phone</string>
     <string name="picker_other_brand">Other brand</string>
     <string name="picker_brand_label">Brand</string>
@@ -178,4 +177,21 @@
     <string name="upgrade_unlocked_sub">Thank you! About 20 feedbacks a day and saved recipes are on.</string>
     <string name="topup_pack_fmt" formatted="true">%1$s · %2$s feedbacks</string>
     <string name="feedback_no_ad">No ad is available right now. Try again in a moment.</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_phone">Your phone</string>
+    <string name="settings_unlock">Lifetime unlock</string>
+    <string name="settings_not_unlocked">Not bought yet</string>
+    <string name="settings_restore">Restore purchases</string>
+    <string name="settings_restoring">Checking Google Play for your purchases…</string>
+    <string name="settings_payment_guide">Paying without a card</string>
+    <string name="payguide_title">Pay on Google Play without a card</string>
+    <string name="payguide_sub">You can buy without a bank card. Google Play shows which ways to pay your account has.</string>
+    <string name="payguide_1">Open the Play Store and tap your profile picture at the top right</string>
+    <string name="payguide_2">Open “Payments &amp; subscriptions” › “Payment methods”</string>
+    <string name="payguide_3">Add one of the listed options, such as bKash or mobile balance</string>
+    <string name="payguide_4">Have a gift card code? Enter it in “Payments &amp; subscriptions” › “Redeem gift code”</string>
+    <string name="payguide_note">Then come back here and tap Unlock. Pick the method you added when paying.</string>
+    <string name="payguide_cta">Got it</string>
+    <string name="settings_version_fmt" formatted="true">Version %1$s</string>
 </resources>
