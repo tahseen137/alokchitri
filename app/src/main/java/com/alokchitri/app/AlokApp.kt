@@ -14,6 +14,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -29,6 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.alokchitri.app.camera.Camera2PreviewHost
+import com.alokchitri.app.data.BrandGuideRepository
 import com.alokchitri.app.data.SampleData
 import com.alokchitri.app.overlay.FloatingCardService
 import com.alokchitri.app.ui.FlowViewModel
@@ -236,10 +238,15 @@ fun AlokApp(
             }
 
             composable(Routes.HOWTO) {
-                val stepsByBrand = PhoneBrand.entries.associateWith { genericSteps(it) }
+                val bundled = genericSteps()
+                val langCode = if (language == AppLanguage.EN) "en" else "bn"
+                // Null until the download (or cached copy) answers, and if neither exists: then the bundled steps.
+                val guide by produceState<Map<PhoneBrand, List<HowToStep>>?>(null, langCode) {
+                    value = BrandGuideRepository(context).load(langCode)
+                }
                 HowToScreen(
                     initialBrand = state.brand ?: PhoneBrand.XIAOMI,
-                    stepsFor = { brand -> stepsByBrand.getValue(brand) }, // TODO: from the remote brand-guide JSON
+                    stepsFor = { brand -> guide?.get(brand)?.takeIf { it.isNotEmpty() } ?: bundled },
                     onBack = { nav.popBackStack() },
                     onStartCard = { startCard(); nav.popBackStack() },
                 )
@@ -306,7 +313,7 @@ private fun cardItemsFor(rec: Recommendation): List<CardItem> = listOf(
 )
 
 @Composable
-private fun genericSteps(brand: PhoneBrand): List<HowToStep> = listOf(
+private fun genericSteps(): List<HowToStep> = listOf(
     HowToStep(stringResource(R.string.howto_1)),
     HowToStep(stringResource(R.string.howto_2)),
     HowToStep(stringResource(R.string.howto_3)),
