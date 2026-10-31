@@ -3,6 +3,7 @@ package com.alokchitri.app.ui
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.alokchitri.app.BuildConfig
 import com.alokchitri.app.camera.DeviceProbe
 import com.alokchitri.app.data.Prefs
 import com.alokchitri.app.data.RecipeStore
@@ -61,9 +62,25 @@ class FlowViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             val probed = withContext(Dispatchers.Default) { runCatching { DeviceProbe(app).probe() }.getOrNull() }
             val name = prefs.phoneNameOverride ?: probed?.phoneName ?: DeviceProbe.buildName()
-            _state.update { it.copy(phoneName = name, brand = PhoneBrand.guess(name), device = probed?.limits ?: it.device) }
+            probedDevice = probed?.limits ?: _state.value.device
+            _state.update { it.copy(phoneName = name, brand = PhoneBrand.guess(name), device = effectiveDevice()) }
         }
     }
+
+    /** What Camera2 reported (or the sample fallback); [effectiveDevice] may override manual support in debug. */
+    private var probedDevice: DeviceLimits = SampleData.device
+
+    val simulateProMode: Boolean get() = BuildConfig.DEBUG && prefs.simulateProMode
+
+    /** Debug builds only (the Settings switch is hidden in release): pretend the camera has manual control. */
+    fun setSimulateProMode(enabled: Boolean) {
+        if (!BuildConfig.DEBUG) return
+        prefs.simulateProMode = enabled
+        _state.update { it.copy(device = effectiveDevice()) }
+    }
+
+    private fun effectiveDevice(): DeviceLimits =
+        if (simulateProMode) probedDevice.copy(manualSupported = true) else probedDevice
 
     fun confirmSetup() {
         prefs.setupDone = true

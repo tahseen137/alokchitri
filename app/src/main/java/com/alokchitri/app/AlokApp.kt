@@ -321,6 +321,8 @@ fun AlokApp(
                         Toast.makeText(context, restoring, Toast.LENGTH_SHORT).show()
                     },
                     onPaymentGuide = { nav.navigate(Routes.PAYMENT_GUIDE) },
+                    simulateProMode = if (BuildConfig.DEBUG) flow.simulateProMode else null, // re-read when the switch updates state.device
+                    onSimulateProModeChange = flow::setSimulateProMode,
                 )
             }
 

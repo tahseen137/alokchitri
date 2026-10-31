@@ -14,11 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Switch
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,6 +48,9 @@ fun SettingsScreen(
     onUpgrade: () -> Unit,
     onRestorePurchases: () -> Unit,
     onPaymentGuide: () -> Unit,
+    /** Non-null only in debug builds: the emulator switch that pretends the camera has Pro mode. */
+    simulateProMode: Boolean? = null,
+    onSimulateProModeChange: (Boolean) -> Unit = {},
 ) {
     Column(
         Modifier.fillMaxSize().background(AlokColors.Ground).verticalScroll(rememberScrollState())
@@ -79,6 +84,26 @@ fun SettingsScreen(
             LinkRow(stringResource(R.string.settings_restore), null, onRestorePurchases)
             HorizontalDivider(color = AlokColors.Outline)
             LinkRow(stringResource(R.string.settings_payment_guide), null, onPaymentGuide)
+        }
+
+        if (simulateProMode != null) {
+            Spacer(Modifier.height(16.dp))
+            AlokCard(Modifier.fillMaxWidth(), padding = 0.dp, borderColor = AlokColors.Amber) {
+                Row(
+                    Modifier.fillMaxWidth().heightIn(min = 56.dp)
+                        .toggleable(simulateProMode, role = Role.Switch, onValueChange = onSimulateProModeChange)
+                        .padding(horizontal = 18.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        // Developer-only text: not translated, never shown in release builds.
+                        Text("Pretend this phone has Pro mode", style = MaterialTheme.typography.bodyLarge, color = AlokColors.Text)
+                        Text("Debug builds only. For emulators without manual camera control.", style = MaterialTheme.typography.bodySmall, color = AlokColors.TextMuted)
+                    }
+                    Switch(simulateProMode, onCheckedChange = null)
+                }
+            }
         }
 
         Spacer(Modifier.height(16.dp))
