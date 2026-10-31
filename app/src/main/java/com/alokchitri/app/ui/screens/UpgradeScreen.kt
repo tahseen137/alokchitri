@@ -1,5 +1,10 @@
 package com.alokchitri.app.ui.screens
 
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.semantics.Role
+import com.alokchitri.app.AppConfig
+import com.alokchitri.app.ui.localizedNumber
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -40,10 +45,18 @@ import com.alokchitri.app.ui.theme.AlokColors
 import com.alokchitri.app.ui.theme.AlokShapes
 
 /**
- * Prices come from Google Play (ProductDetails.formattedPrice), never hard-coded: the design shows
- * about ৳199, early-user ৳149. [price] / [strikePrice] are the formatted strings; strikePrice may be null.
+ * Prices come from Google Play (ProductDetails.formattedPrice), never hard-coded. Null means Play hasn't
+ * answered (offline, no Play, products not set up): the buy buttons are disabled and a "try again" line
+ * shows instead of a made-up price. [strikePrice] is for a Play discount offer; null hides it.
  */
-data class UpgradeOffer(val price: String, val strikePrice: String?, val topUpLabel: String)
+data class UpgradeOffer(
+    val price: String?,
+    val strikePrice: String? = null,
+    val topUpPrice: String?,
+    val unlocked: Boolean = false,
+    /** A purchase is waiting for payment; Play finishes it later. */
+    val pending: Boolean = false,
+)
 
 /** Screen 11 · Lifetime unlock. Opened from Home (settings), Feedback (out of quota) and Recipes. */
 @Composable
@@ -53,6 +66,7 @@ fun UpgradeScreen(
     onBuy: () -> Unit,
     onBuyTopUp: () -> Unit,
     onGiftCardGuide: () -> Unit,
+    onRetry: () -> Unit = {},
 ) {
     Column(Modifier.fillMaxSize().background(AlokColors.Ground).padding(horizontal = 20.dp).padding(top = 8.dp, bottom = 24.dp)) {
         IconButton(onClick = onClose, modifier = Modifier.size(48.dp)) {
@@ -65,10 +79,10 @@ fun UpgradeScreen(
             Text(stringResource(R.string.upgrade_sub), style = MaterialTheme.typography.bodyMedium, color = AlokColors.TextMuted)
             Spacer(Modifier.height(16.dp))
 
-            AlokCard(Modifier.fillMaxWidth(), borderColor = AlokColors.Amber, shape = AlokShapes.Hero, padding = 20.dp) {
+            if (offer.unlocked) UnlockedCard() else AlokCard(Modifier.fillMaxWidth(), borderColor = AlokColors.Amber, shape = AlokShapes.Hero, padding = 20.dp) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Bottom) {
-                    Text(offer.price, style = MaterialTheme.typography.displayMedium.copy(fontSize = androidx.compose.ui.unit.TextUnit(40f, androidx.compose.ui.unit.TextUnitType.Sp)), color = AlokColors.Amber)
-                    if (offer.strikePrice != null) {
+                    Text(offer.price ?: "—", style = MaterialTheme.typography.displayMedium.copy(fontSize = androidx.compose.ui.unit.TextUnit(40f, androidx.compose.ui.unit.TextUnitType.Sp)), color = AlokColors.Amber)
+                    if (offer.price != null && offer.strikePrice != null) {
                         Text(offer.strikePrice, style = MaterialTheme.typography.titleLarge, color = AlokColors.TextMuted, textDecoration = TextDecoration.LineThrough)
                         Box(Modifier.clip(CircleShape).background(AlokColors.AmberTint).padding(horizontal = 10.dp, vertical = 3.dp)) {
                             Text(stringResource(R.string.upgrade_early), style = MaterialTheme.typography.labelSmall, color = AlokColors.Amber)
@@ -76,21 +90,36 @@ fun UpgradeScreen(
                     }
                 }
                 Spacer(Modifier.height(14.dp))
-                listOf(R.string.upgrade_b1, R.string.upgrade_b2, R.string.upgrade_b3, R.string.upgrade_b4).forEach { res ->
+                listOf(R.string.upgrade_b1, R.string.upgrade_b2, R.string.upgrade_b3).forEach { res ->
                     Row(Modifier.padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Outlined.Check, null, tint = AlokColors.Green, modifier = Modifier.size(22.dp))
                         Text(stringResource(res), style = MaterialTheme.typography.bodyLarge, color = AlokColors.Text)
                     }
                 }
                 Spacer(Modifier.height(10.dp))
-                PrimaryButton(stringResource(R.string.upgrade_cta_fmt, offer.price), onBuy)
+                if (offer.price != null) {
+                    PrimaryButton(stringResource(R.string.upgrade_cta_fmt, offer.price), onBuy, enabled = !offer.pending)
+                } else {
+                    PrimaryButton(stringResource(R.string.upgrade_cta), onBuy, enabled = false)
+                }
                 Text(
-                    stringResource(R.string.upgrade_play),
+                    stringResource(
+                        when {
+                            offer.pending -> R.string.upgrade_pending
+                            offer.price == null -> R.string.upgrade_unavailable
+                            else -> R.string.upgrade_play
+                        },
+                    ),
                     modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                     style = MaterialTheme.typography.labelSmall,
                     color = AlokColors.TextMuted,
                     textAlign = TextAlign.Center,
                 )
+                if (offer.price == null && !offer.pending) {
+                    TextButton(onClick = onRetry, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+                        Text(stringResource(R.string.meter_retry), color = AlokColors.Amber)
+                    }
+                }
             }
 
             Spacer(Modifier.height(12.dp))
@@ -100,10 +129,20 @@ fun UpgradeScreen(
                         Text(stringResource(R.string.topup_title), style = MaterialTheme.typography.bodyLarge.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold), color = AlokColors.Text)
                         Text(stringResource(R.string.topup_sub), style = MaterialTheme.typography.bodySmall, color = AlokColors.TextMuted)
                     }
+                    val canBuyTopUp = offer.topUpPrice != null
                     Box(
-                        Modifier.height(48.dp).clip(CircleShape).border(1.dp, AlokColors.Outline, CircleShape).clickable(onClick = onBuyTopUp).padding(horizontal = 16.dp),
+                        Modifier.heightIn(min = 48.dp).clip(CircleShape)
+                            .border(1.dp, if (canBuyTopUp) AlokColors.Outline else AlokColors.OutlineStrong, CircleShape)
+                            .clickable(enabled = canBuyTopUp, role = Role.Button, onClick = onBuyTopUp)
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
                         contentAlignment = Alignment.Center,
-                    ) { Text(offer.topUpLabel, style = MaterialTheme.typography.labelMedium, color = AlokColors.Text) }
+                    ) {
+                        Text(
+                            offer.topUpPrice?.let { stringResource(R.string.topup_pack_fmt, it, localizedNumber(AppConfig.TOPUP_CREDITS)) } ?: "—",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = if (canBuyTopUp) AlokColors.Text else AlokColors.TextMuted,
+                        )
+                    }
                 }
             }
         }
@@ -114,5 +153,18 @@ fun UpgradeScreen(
                 InfoBanner(Icons.Outlined.CreditCard, AlokColors.Green, stringResource(R.string.giftcard_title) + " " + stringResource(R.string.giftcard_sub))
             }
         }
+    }
+}
+
+/** Replaces the offer once the lifetime unlock is owned; the top-up card below stays (spec). */
+@Composable
+private fun UnlockedCard() {
+    AlokCard(Modifier.fillMaxWidth(), borderColor = AlokColors.Green, shape = AlokShapes.Hero, padding = 20.dp) {
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Outlined.Check, null, tint = AlokColors.Green, modifier = Modifier.size(32.dp))
+            Text(stringResource(R.string.upgrade_unlocked), style = MaterialTheme.typography.headlineSmall, color = AlokColors.Green)
+        }
+        Spacer(Modifier.height(8.dp))
+        Text(stringResource(R.string.upgrade_unlocked_sub), style = MaterialTheme.typography.bodyMedium, color = AlokColors.Text)
     }
 }

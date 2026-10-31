@@ -126,7 +126,7 @@
     <string name="feedback_what">What happened</string>
     <string name="feedback_next">Next time</string>
     <string name="feedback_watch_ad">Watch an ad for more</string>
-    <string name="feedback_topup">30 for ৳29</string>
+    <string name="feedback_topup">30 more feedbacks</string>
     <string name="recipes_title">My recipes</string>
     <string name="recipes_new_cd">New recipe</string>
     <string name="recipes_sub">Save the settings for your favorite spots and get them back in one tap.</string>
@@ -138,12 +138,10 @@
     <string name="upgrade_b1">No ads</string>
     <string name="upgrade_b2">About 20 feedbacks a day</string>
     <string name="upgrade_b3">Save your favorite recipes</string>
-    <string name="upgrade_b4">Track your progress</string>
     <string name="upgrade_cta_fmt" formatted="true">Unlock · %1$s</string>
     <string name="upgrade_play">Paid through Google Play</string>
     <string name="topup_title">Feedback top-up</string>
     <string name="topup_sub">When you need more than the daily limit</string>
-    <string name="topup_pack">৳29 · 30 feedbacks</string>
     <string name="giftcard_title">No card?</string>
     <string name="giftcard_sub">See how to buy a Google Play gift card with bKash</string>
     <string name="picker_title">Choose your phone</string>
@@ -173,4 +171,10 @@
     <string name="feedback_error">Couldn\'t get feedback. Check your internet and try again. This didn\'t use a free feedback.</string>
     <string name="feedback_unreadable">This file couldn\'t be opened as a photo. Pick another one.</string>
     <string name="feedback_out">Today\'s free feedback is used up. Watch an ad for one more, or buy a top-up.</string>
+    <string name="upgrade_cta">Unlock</string>
+    <string name="upgrade_unavailable">Couldn\'t load the price from Google Play. Check your internet and try again.</string>
+    <string name="upgrade_pending">Waiting for payment. It unlocks as soon as Google Play receives it.</string>
+    <string name="upgrade_unlocked">Unlocked</string>
+    <string name="upgrade_unlocked_sub">Thank you! About 20 feedbacks a day and saved recipes are on.</string>
+    <string name="topup_pack_fmt" formatted="true">%1$s · %2$s feedbacks</string>
 </resources>

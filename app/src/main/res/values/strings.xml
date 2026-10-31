@@ -126,7 +126,7 @@
     <string name="feedback_what">কী হয়েছিল</string>
     <string name="feedback_next">পরের বার</string>
     <string name="feedback_watch_ad">বিজ্ঞাপন দেখে আরও নিন</string>
-    <string name="feedback_topup">৳২৯-এ ৩০টি</string>
+    <string name="feedback_topup">আরও ৩০টি ফিডব্যাক</string>
     <string name="recipes_title">আমার রেসিপি</string>
     <string name="recipes_new_cd">নতুন রেসিপি</string>
     <string name="recipes_sub">পছন্দের জায়গার সেটিং সেভ করে রাখুন। পরে এক ছোঁয়ায় ফিরে পান।</string>
@@ -138,12 +138,10 @@
     <string name="upgrade_b1">কোনো বিজ্ঞাপন নেই</string>
     <string name="upgrade_b2">দিনে প্রায় ২০টি ফিডব্যাক</string>
     <string name="upgrade_b3">পছন্দের রেসিপি সেভ করা</string>
-    <string name="upgrade_b4">নিজের উন্নতির হিসাব</string>
     <string name="upgrade_cta_fmt" formatted="true">আনলক করুন · %1$s</string>
     <string name="upgrade_play">Google Play দিয়ে পেমেন্ট</string>
     <string name="topup_title">ফিডব্যাক টপ-আপ</string>
     <string name="topup_sub">দৈনিক সীমার বাইরে বাড়তি দরকার হলে</string>
-    <string name="topup_pack">৳29 · ৩০টি</string>
     <string name="giftcard_title">কার্ড নেই?</string>
     <string name="giftcard_sub">বিকাশ দিয়ে Google Play গিফট কার্ড কেনার গাইড দেখুন</string>
     <string name="picker_title">আপনার ফোন বেছে নিন</string>
@@ -173,4 +171,10 @@
     <string name="feedback_error">উত্তর আনা গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন। এতে আপনার ফ্রি ফিডব্যাক কাটা হয়নি।</string>
     <string name="feedback_unreadable">এই ফাইলটি ছবি হিসেবে খোলা গেল না। অন্য একটি ছবি বেছে নিন।</string>
     <string name="feedback_out">আজকের ফ্রি ফিডব্যাক শেষ। একটি বিজ্ঞাপন দেখে আরও একটি নিন, বা টপ-আপ কিনুন।</string>
+    <string name="upgrade_cta">আনলক করুন</string>
+    <string name="upgrade_unavailable">Google Play থেকে দাম আনা যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।</string>
+    <string name="upgrade_pending">পেমেন্টের অপেক্ষায়। Google Play পেমেন্ট পেলে আনলক হয়ে যাবে।</string>
+    <string name="upgrade_unlocked">আনলক করা আছে</string>
+    <string name="upgrade_unlocked_sub">ধন্যবাদ! দিনে প্রায় ২০টি ফিডব্যাক আর রেসিপি সেভ করা চালু আছে।</string>
+    <string name="topup_pack_fmt" formatted="true">%1$s · %2$sটি</string>
 </resources>

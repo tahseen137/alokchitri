@@ -11,9 +11,11 @@ import java.time.LocalDate
  */
 class FeedbackQuota(context: Context, private val today: () -> LocalDate = LocalDate::now) {
     private val sp = context.getSharedPreferences("alok_quota", Context.MODE_PRIVATE)
+    private val prefs = Prefs(context)
 
-    /** Raised by the lifetime unlock (billing). */
-    var dailyLimit: Int = AppConfig.FREE_FEEDBACKS_PER_DAY
+    /** 3 a day free, about 20 after the lifetime unlock. */
+    val dailyLimit: Int
+        get() = if (prefs.unlocked) AppConfig.UNLOCKED_FEEDBACKS_PER_DAY else AppConfig.FREE_FEEDBACKS_PER_DAY
 
     val topUpCredits: Int get() = sp.getInt(KEY_TOPUP, 0)
 
