@@ -160,4 +160,10 @@
     <string name="meter_no_reading">ক্যামেরা চালু হলে এখানে আলোর মাপ দেখাবে।</string>
     <string name="card_close">কার্ড বন্ধ করুন</string>
     <string name="card_started">কার্ড চালু হয়েছে। এবার ফোনের ক্যামেরা খুলুন।</string>
+    <string name="recipes_name_label">নাম</string>
+    <string name="recipes_name_hint">যেমন “আমার ঘর, রাত”</string>
+    <string name="recipes_saved">রেসিপি সেভ হয়েছে</string>
+    <string name="recipes_delete">মুছে ফেলুন</string>
+    <string name="recipes_delete_cd">রেসিপি মুছুন</string>
+    <string name="recipes_delete_title" formatted="true">“%1$s” মুছে ফেলবেন?</string>
 </resources>

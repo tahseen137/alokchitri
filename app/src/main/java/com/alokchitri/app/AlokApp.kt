@@ -49,6 +49,7 @@ import com.alokchitri.app.ui.screens.PhoneBrand
 import com.alokchitri.app.ui.screens.PhonePickerDialog
 import com.alokchitri.app.ui.screens.PhotoMeta
 import com.alokchitri.app.ui.screens.RecipesScreen
+import com.alokchitri.app.ui.screens.SaveRecipeDialog
 import com.alokchitri.app.ui.screens.RecommendScreen
 import com.alokchitri.app.ui.screens.SetupScreen
 import com.alokchitri.app.ui.screens.UpgradeOffer
@@ -97,31 +98,49 @@ fun AlokApp(
     var showPhonePicker by remember { mutableStateOf(false) }
     // Read once: after Setup is confirmed the next launch opens straight on Home.
     val startRoute = remember { if (flow.setupDone) Routes.HOME else Routes.WELCOME }
+    val recipes by flow.recipes.collectAsStateWithLifecycle()
+    var showSaveRecipe by remember { mutableStateOf(false) }
     val cardTitle = stringResource(state.goal.titleRes())
     val rec = (state.result as? RecommendationResult.Success)?.recommendation
     val cardItems = rec?.let { cardItemsFor(it) }.orEmpty()
     val cardStarted = stringResource(R.string.card_started)
-    val launchCard: () -> Unit = {
-        FloatingCardService.start(context, cardTitle, cardItems)
+    // The card waiting for the overlay permission: the current shot's, or a saved recipe's.
+    var pendingCard by remember { mutableStateOf<Pair<String, List<CardItem>>?>(null) }
+    val launchCard: (String, List<CardItem>) -> Unit = { title, items ->
+        FloatingCardService.start(context, title, items)
         Toast.makeText(context, cardStarted, Toast.LENGTH_SHORT).show()
     }
     // Android 13+: the foreground notification needs this, but the card works without it, so never block on it.
     val notificationLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
     val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         // Re-check on return: the user may have backed out of the settings page without granting.
-        if (FloatingCardService.canDrawOverlays(context) && cardItems.isNotEmpty()) launchCard()
+        val card = pendingCard
+        pendingCard = null
+        if (card != null && FloatingCardService.canDrawOverlays(context)) launchCard(card.first, card.second)
     }
-    val startCard: () -> Unit = {
+    val startCardWith: (String, List<CardItem>) -> Unit = { title, items ->
         if (Build.VERSION.SDK_INT >= 33 &&
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        if (cardItems.isEmpty()) Unit
-        else if (FloatingCardService.canDrawOverlays(context)) launchCard()
-        else showPermission = true
+        if (items.isEmpty()) Unit
+        else if (FloatingCardService.canDrawOverlays(context)) launchCard(title, items)
+        else { pendingCard = title to items; showPermission = true }
+    }
+    val startCard: () -> Unit = { startCardWith(cardTitle, cardItems) }
+    if (showSaveRecipe) {
+        SaveRecipeDialog(
+            initialName = cardTitle,
+            onDismiss = { showSaveRecipe = false },
+            onSave = { name ->
+                flow.saveRecipe(name)
+                showSaveRecipe = false
+                Toast.makeText(context, context.getString(R.string.recipes_saved), Toast.LENGTH_SHORT).show()
+            },
+        )
     }
     if (showPermission) {
         AlertDialog(
-            onDismissRequest = { showPermission = false },
+            onDismissRequest = { showPermission = false; pendingCard = null },
             title = { Text(stringResource(R.string.overlay_permission_title)) },
             text = { Text(stringResource(R.string.overlay_permission_body)) },
             confirmButton = {
@@ -130,7 +149,7 @@ fun AlokApp(
                     permissionLauncher.launch(FloatingCardService.permissionIntent(context))
                 }) { Text(stringResource(R.string.perm_allow)) }
             },
-            dismissButton = { TextButton(onClick = { showPermission = false }) { Text(stringResource(R.string.perm_cancel)) } },
+            dismissButton = { TextButton(onClick = { showPermission = false; pendingCard = null }) { Text(stringResource(R.string.perm_cancel)) } },
         )
     }
 
@@ -178,7 +197,7 @@ fun AlokApp(
                 HomeScreen(
                     freeLeft = SampleData.FREE_FEEDBACKS_LEFT,
                     freeTotal = SampleData.FREE_FEEDBACKS_PER_DAY,
-                    lastRecipe = SampleData.recipes.firstOrNull(),
+                    lastRecipe = recipes.firstOrNull(),
                     onNewShot = { nav.navigate(Routes.GOAL) },
                     onSettings = { nav.navigate(Routes.UPGRADE) }, // TODO: real settings screen
                 )
@@ -211,7 +230,7 @@ fun AlokApp(
                     result = state.result,
                     onBack = { nav.popBackStack() },
                     onStartCard = startCard,
-                    onSaveRecipe = { Toast.makeText(context, "TODO: save recipe (Room)", Toast.LENGTH_SHORT).show() },
+                    onSaveRecipe = { showSaveRecipe = true },
                     onWhereToFind = { nav.navigate(Routes.HOWTO) },
                 )
             }
@@ -243,10 +262,12 @@ fun AlokApp(
             }
 
             composable(Routes.RECIPES) {
+                val itemsById = recipes.associate { it.id to cardItemsFor(it.recommendation) }
                 RecipesScreen(
-                    recipes = SampleData.recipes,
-                    onNew = { nav.navigate(Routes.UPGRADE) },
-                    onUse = { /* TODO: load the recipe into the card */ },
+                    recipes = recipes,
+                    onNew = { nav.navigate(Routes.GOAL) },
+                    onUse = { recipe -> startCardWith(recipe.name, itemsById.getValue(recipe.id)) },
+                    onDelete = { flow.deleteRecipe(it.id) },
                 )
             }
 

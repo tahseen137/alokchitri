@@ -160,4 +160,10 @@
     <string name="meter_no_reading">The light reading shows here once the camera is on.</string>
     <string name="card_close">Close card</string>
     <string name="card_started">Card is on. Now open your camera app.</string>
+    <string name="recipes_name_label">Name</string>
+    <string name="recipes_name_hint">For example “My room, night”</string>
+    <string name="recipes_saved">Recipe saved</string>
+    <string name="recipes_delete">Delete</string>
+    <string name="recipes_delete_cd">Delete recipe</string>
+    <string name="recipes_delete_title" formatted="true">Delete “%1$s”?</string>
 </resources>
