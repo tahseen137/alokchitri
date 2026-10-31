@@ -34,6 +34,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.alokchitri.app.ads.RewardedAds
 import com.alokchitri.app.camera.Camera2PreviewHost
 import com.alokchitri.app.data.BrandGuideRepository
 import com.alokchitri.app.overlay.FloatingCardService
@@ -109,6 +110,9 @@ fun AlokApp(
     val feedbackLeft by feedback.left.collectAsStateWithLifecycle()
     val feedbackLeftToday by feedback.leftToday.collectAsStateWithLifecycle()
     val billing by feedback.billing.state.collectAsStateWithLifecycle()
+    // Lifetime unlock means no ads, so the SDK isn't even started for those users.
+    val rewardedAds = remember(billing.unlocked) { if (billing.unlocked) null else RewardedAds(context) }
+    val noAdNow = stringResource(R.string.feedback_no_ad)
     val langCode = if (language == AppLanguage.EN) "en" else "bn"
     // System photo picker: no storage permission needed (spec).
     val photoPicker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -270,7 +274,13 @@ fun AlokApp(
                     state = feedbackState,
                     freeLeft = feedbackLeft,
                     onPickPhoto = { photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
-                    onWatchAd = { /* TODO: AdMob rewarded */ },
+                    onWatchAd = {
+                        val shown = context.findActivity()?.let { activity ->
+                            rewardedAds?.show(activity) { feedback.onAdRewarded(langCode, state.phoneName) }
+                        } == true
+                        if (!shown) Toast.makeText(context, noAdNow, Toast.LENGTH_SHORT).show()
+                    },
+                    showAdButton = !billing.unlocked,
                     onTopUp = { nav.navigate(Routes.UPGRADE) },
                     onRetry = { feedback.retry(langCode, state.phoneName) },
                 )

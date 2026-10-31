@@ -14,6 +14,8 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "0.1.0"
+        // AdMob app ID, read by the manifest. Google's sample ID: replace with the real one (with the ad unit in AppConfig).
+        manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
     }
 
     buildTypes {
@@ -58,8 +60,8 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
     implementation("androidx.exifinterface:exifinterface:1.3.7")    // settings saved in the photo (Feedback)
     implementation("com.android.billingclient:billing-ktx:8.0.0")   // lifetime unlock + feedback top-up
+    implementation("com.google.android.gms:play-services-ads:24.4.0") // rewarded ad for one extra feedback
     testImplementation(kotlin("test"))
     testImplementation("org.json:json:20240303") // the real org.json; android.jar only has stubs on the JVM
 
-    // Later: AdMob (play-services-ads).
 }
