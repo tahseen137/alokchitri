@@ -4,9 +4,11 @@ import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.alokchitri.app.data.BillingRepository
 import com.alokchitri.app.data.FeedbackApi
 import com.alokchitri.app.data.FeedbackQuota
 import com.alokchitri.app.data.PhotoPrep
+import com.alokchitri.app.data.Prefs
 import com.alokchitri.app.data.PreparedPhoto
 import com.alokchitri.app.ui.screens.FeedbackUiState
 import com.alokchitri.app.ui.screens.PhotoMeta
@@ -21,9 +23,11 @@ import kotlinx.coroutines.withContext
 /**
  * Screen 9: picked photo -> EXIF + downscale -> server -> feedback. A feedback is spent only when the server
  * answered, so failed calls cost nothing (spec). Language and context are passed per request.
+ * Also owns Google Play Billing, because both purchases change the feedback quota this class shows.
  */
 class FeedbackViewModel(app: Application) : AndroidViewModel(app) {
     val quota = FeedbackQuota(app)
+    val billing = BillingRepository(app, Prefs(app), quota, viewModelScope, onEntitlementsChanged = { refreshQuota() })
 
     private val _state = MutableStateFlow<FeedbackUiState>(FeedbackUiState.Empty)
     val state: StateFlow<FeedbackUiState> = _state.asStateFlow()
@@ -38,6 +42,10 @@ class FeedbackViewModel(app: Application) : AndroidViewModel(app) {
 
     private var photo: PreparedPhoto? = null
     private var job: Job? = null
+
+    init {
+        billing.connect()
+    }
 
     fun onPhotoPicked(uri: Uri, language: String, phone: String?) {
         job?.cancel()

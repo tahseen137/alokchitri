@@ -1,6 +1,9 @@
 package com.alokchitri.app
 
 import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import android.os.Build
 import android.widget.Toast
@@ -13,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -104,6 +108,7 @@ fun AlokApp(
     val feedbackState by feedback.state.collectAsStateWithLifecycle()
     val feedbackLeft by feedback.left.collectAsStateWithLifecycle()
     val feedbackLeftToday by feedback.leftToday.collectAsStateWithLifecycle()
+    val billing by feedback.billing.state.collectAsStateWithLifecycle()
     val langCode = if (language == AppLanguage.EN) "en" else "bn"
     // System photo picker: no storage permission needed (spec).
     val photoPicker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -240,7 +245,8 @@ fun AlokApp(
                     result = state.result,
                     onBack = { nav.popBackStack() },
                     onStartCard = startCard,
-                    onSaveRecipe = { showSaveRecipe = true },
+                    // The first recipe is free; more are part of the lifetime unlock.
+                    onSaveRecipe = { if (billing.unlocked || recipes.isEmpty()) showSaveRecipe = true else nav.navigate(Routes.UPGRADE) },
                     onWhereToFind = { nav.navigate(Routes.HOWTO) },
                 )
             }
@@ -281,16 +287,29 @@ fun AlokApp(
             }
 
             composable(Routes.UPGRADE) {
+                LaunchedEffect(Unit) { feedback.billing.connect() } // fresh prices and purchases each time it opens
                 UpgradeScreen(
-                    offer = UpgradeOffer(price = "৳149", strikePrice = "৳199", topUpLabel = stringResource(R.string.topup_pack)), // TODO: Play Billing
+                    offer = UpgradeOffer(
+                        price = billing.unlockPrice.takeIf { billing.ready },
+                        topUpPrice = billing.topUpPrice.takeIf { billing.ready },
+                        unlocked = billing.unlocked,
+                        pending = billing.pending,
+                    ),
                     onClose = { nav.popBackStack() },
-                    onBuy = { /* TODO: BillingClient.launchBillingFlow */ },
-                    onBuyTopUp = { /* TODO: consumable product */ },
+                    onBuy = { context.findActivity()?.let { feedback.billing.buy(it, AppConfig.PRODUCT_UNLOCK) } },
+                    onBuyTopUp = { context.findActivity()?.let { feedback.billing.buy(it, AppConfig.PRODUCT_TOPUP) } },
                     onGiftCardGuide = { /* TODO: bKash gift-card guide screen */ },
+                    onRetry = { feedback.billing.connect() },
                 )
             }
         }
     }
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }
 
 private fun NavHostController.navigateTab(route: String) {

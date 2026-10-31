@@ -62,12 +62,19 @@ fun PrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
+    enabled: Boolean = true,
 ) {
     Button(
         onClick = onClick,
         modifier = modifier.fillMaxWidth().heightIn(min = 56.dp),
+        enabled = enabled,
         shape = CircleShape,
-        colors = ButtonDefaults.buttonColors(containerColor = AlokColors.Amber, contentColor = AlokColors.OnAmber),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = AlokColors.Amber,
+            contentColor = AlokColors.OnAmber,
+            disabledContainerColor = AlokColors.SurfaceRaised,
+            disabledContentColor = AlokColors.TextMuted,
+        ),
     ) {
         if (icon != null) {
             Icon(icon, contentDescription = null, modifier = Modifier.size(22.dp))

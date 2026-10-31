@@ -57,8 +57,9 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")            // How-to screenshots
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
     implementation("androidx.exifinterface:exifinterface:1.3.7")    // settings saved in the photo (Feedback)
+    implementation("com.android.billingclient:billing-ktx:8.0.0")   // lifetime unlock + feedback top-up
     testImplementation(kotlin("test"))
     testImplementation("org.json:json:20240303") // the real org.json; android.jar only has stubs on the JVM
 
-    // Later: Play Billing (com.android.billingclient:billing-ktx), AdMob (play-services-ads).
+    // Later: AdMob (play-services-ads).
 }

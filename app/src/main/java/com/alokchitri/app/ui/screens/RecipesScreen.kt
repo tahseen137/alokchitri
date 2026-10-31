@@ -54,8 +54,8 @@ import com.alokchitri.app.ui.theme.AlokColors
 
 /**
  * Screen 10 · Saved recipes. "+" starts a new shot (a recipe is saved from its Recommendation screen);
- * "Show on card" puts the recipe's settings on the floating card. The lifetime-unlock gate is applied by
- * the caller through [onNew] once billing is in.
+ * "Show on card" puts the recipe's settings on the floating card. Saving is gated at the Recommendation
+ * screen (first recipe free, more with the lifetime unlock), so saved recipes are always usable here.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

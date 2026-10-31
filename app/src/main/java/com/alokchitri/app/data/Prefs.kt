@@ -15,8 +15,14 @@ class Prefs(context: Context) {
         get() = sp.getString(KEY_PHONE_NAME, null)
         set(value) = sp.edit().putString(KEY_PHONE_NAME, value).apply()
 
+    /** Last known state of the lifetime unlock, so it works offline; Play re-confirms on every launch. */
+    var unlocked: Boolean
+        get() = sp.getBoolean(KEY_UNLOCKED, false)
+        set(value) = sp.edit().putBoolean(KEY_UNLOCKED, value).apply()
+
     private companion object {
         const val KEY_SETUP_DONE = "setup_done"
         const val KEY_PHONE_NAME = "phone_name"
+        const val KEY_UNLOCKED = "unlocked"
     }
 }
