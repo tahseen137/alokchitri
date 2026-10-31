@@ -191,4 +191,9 @@
     <string name="payguide_note">Then come back here and tap Unlock. Pick the method you added when paying.</string>
     <string name="payguide_cta">Got it</string>
     <string name="settings_version_fmt" formatted="true">Version %1$s</string>
+    <string name="manual_home">Back to home</string>
+    <string name="manual_tips_title">What still helps</string>
+    <string name="manual_tip_night">In low light, use your camera\'s “Night” mode and keep the phone still until the photo is done.</string>
+    <string name="manual_tip_tap">Tap your subject to set focus and brightness there. If a sun icon appears, slide it up or down to adjust brightness.</string>
+    <string name="manual_tip_steady">Brace your elbows against your body or lean on a wall. Face window light towards your subject.</string>
 </resources>

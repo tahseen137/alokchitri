@@ -191,4 +191,9 @@
     <string name="payguide_note">এরপর এই অ্যাপে ফিরে আনলক চাপুন। পেমেন্টের সময় যোগ করা উপায়টি বেছে নিন।</string>
     <string name="payguide_cta">বুঝেছি</string>
     <string name="settings_version_fmt" formatted="true">সংস্করণ %1$s</string>
+    <string name="manual_home">হোমে ফিরে যান</string>
+    <string name="manual_tips_title">তবু যা করলে ছবি ভালো হবে</string>
+    <string name="manual_tip_night">আলো কম হলে ক্যামেরার “Night” মোড ব্যবহার করুন, আর ছবি ওঠা শেষ না হওয়া পর্যন্ত ফোন স্থির রাখুন।</string>
+    <string name="manual_tip_tap">বিষয়ের ওপর আঙুল দিয়ে ট্যাপ করুন, ফোকাস ও আলো সেখানে মিলবে। পাশে সূর্যের চিহ্ন দেখালে ওপরে-নিচে টেনে উজ্জ্বলতা ঠিক করুন।</string>
+    <string name="manual_tip_steady">কনুই শরীরে চেপে ধরুন বা দেয়ালে ঠেস দিন। জানালার আলো মুখের দিকে রাখুন।</string>
 </resources>

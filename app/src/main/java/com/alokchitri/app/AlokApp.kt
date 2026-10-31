@@ -256,6 +256,8 @@ fun AlokApp(
                     // The first recipe is free; more are part of the lifetime unlock.
                     onSaveRecipe = { if (billing.unlocked || recipes.isEmpty()) showSaveRecipe = true else nav.navigate(Routes.UPGRADE) },
                     onWhereToFind = { nav.navigate(Routes.HOWTO) },
+                    // A plain pop: navigateTab would save this shot's screens and restore them straight back.
+                    onHome = { if (!nav.popBackStack(Routes.HOME, inclusive = false)) nav.navigate(Routes.HOME) },
                 )
             }
 
