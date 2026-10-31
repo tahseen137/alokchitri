@@ -28,6 +28,7 @@ import com.alokchitri.app.R
 import com.alokchitri.app.ui.components.BackBar
 import com.alokchitri.app.ui.components.LightGauge
 import com.alokchitri.app.ui.components.PrimaryButton
+import com.alokchitri.app.ui.components.SecondaryButton
 import com.alokchitri.app.ui.label
 import com.alokchitri.app.ui.localizedNumber
 import com.alokchitri.app.ui.theme.AlokColors
@@ -46,6 +47,8 @@ fun MeterScreen(
     level: LightLevel,
     onBack: () -> Unit,
     onDone: () -> Unit,
+    /** False while the camera is denied or busy: the spec hides the gauge rather than show a stale level. */
+    showGauge: Boolean = true,
     preview: @Composable () -> Unit = { PreviewPlaceholder() },
 ) {
     Box(Modifier.fillMaxSize().background(AlokColors.ViewfinderDeep)) {
@@ -72,17 +75,47 @@ fun MeterScreen(
                 Modifier.fillMaxWidth().clip(AlokShapes.Sheet).background(AlokColors.Surface).padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 28.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
-                    Text(stringResource(R.string.meter_light_now), style = MaterialTheme.typography.bodyMedium, color = AlokColors.TextMuted)
-                    Text(level.label(), style = MaterialTheme.typography.headlineSmall, color = AlokColors.Amber)
-                }
-                LightGauge(level.gauge, stringResource(R.string.meter_gauge_cd, localizedNumber(level.gauge)))
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(stringResource(R.string.meter_dark_end), style = MaterialTheme.typography.labelSmall, color = AlokColors.TextMuted)
-                    Text(stringResource(R.string.meter_bright_end), style = MaterialTheme.typography.labelSmall, color = AlokColors.TextMuted)
+                if (showGauge) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
+                        Text(stringResource(R.string.meter_light_now), style = MaterialTheme.typography.bodyMedium, color = AlokColors.TextMuted)
+                        Text(level.label(), style = MaterialTheme.typography.headlineSmall, color = AlokColors.Amber)
+                    }
+                    LightGauge(level.gauge, stringResource(R.string.meter_gauge_cd, localizedNumber(level.gauge)))
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(stringResource(R.string.meter_dark_end), style = MaterialTheme.typography.labelSmall, color = AlokColors.TextMuted)
+                        Text(stringResource(R.string.meter_bright_end), style = MaterialTheme.typography.labelSmall, color = AlokColors.TextMuted)
+                    }
+                } else {
+                    Text(stringResource(R.string.meter_no_reading), style = MaterialTheme.typography.bodyMedium, color = AlokColors.TextMuted)
                 }
                 PrimaryButton(stringResource(R.string.meter_cta), onDone)
             }
+        }
+    }
+}
+
+enum class CameraProblem { PERMISSION_DENIED, IN_USE }
+
+/** Replaces the preview when there is no camera feed: explanation plus settings (denied) or retry (busy). */
+@Composable
+fun CameraUnavailable(problem: CameraProblem, onAction: () -> Unit) {
+    Box(Modifier.fillMaxSize().background(AlokColors.Viewfinder), contentAlignment = Alignment.Center) {
+        Column(
+            Modifier.padding(horizontal = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Text(
+                stringResource(if (problem == CameraProblem.PERMISSION_DENIED) R.string.meter_cam_denied else R.string.meter_cam_busy),
+                style = MaterialTheme.typography.bodyLarge,
+                color = AlokColors.Text,
+                textAlign = TextAlign.Center,
+            )
+            SecondaryButton(
+                stringResource(if (problem == CameraProblem.PERMISSION_DENIED) R.string.meter_open_settings else R.string.meter_retry),
+                onAction,
+                accent = true,
+            )
         }
     }
 }
@@ -91,28 +124,34 @@ fun MeterScreen(
 @Composable
 fun PreviewPlaceholder() {
     Box(Modifier.fillMaxSize().background(AlokColors.Viewfinder)) {
-        Canvas(Modifier.fillMaxSize()) {
-            val grid = AlokColors.Text.copy(alpha = 0.12f)
-            drawLine(grid, Offset(size.width / 3, 0f), Offset(size.width / 3, size.height))
-            drawLine(grid, Offset(size.width * 2 / 3, 0f), Offset(size.width * 2 / 3, size.height))
-            drawLine(grid, Offset(0f, size.height / 3), Offset(size.width, size.height / 3))
-            drawLine(grid, Offset(0f, size.height * 2 / 3), Offset(size.width, size.height * 2 / 3))
-            val c = Offset(size.width / 2, size.height / 2)
-            val r = 64.dp.toPx()
-            drawCircle(AlokColors.Amber, r, c, style = Stroke(2.5.dp.toPx()))
-            drawCircle(AlokColors.Amber, 5.dp.toPx(), c)
-            val cap = StrokeCap.Round
-            val w = 2.5.dp.toPx()
-            drawLine(AlokColors.Amber, Offset(c.x, c.y - r), Offset(c.x, c.y - r + 14.dp.toPx()), w, cap)
-            drawLine(AlokColors.Amber, Offset(c.x, c.y + r), Offset(c.x, c.y + r - 14.dp.toPx()), w, cap)
-            drawLine(AlokColors.Amber, Offset(c.x - r, c.y), Offset(c.x - r + 14.dp.toPx(), c.y), w, cap)
-            drawLine(AlokColors.Amber, Offset(c.x + r, c.y), Offset(c.x + r - 14.dp.toPx(), c.y), w, cap)
-        }
+        MeterReticle()
         Text(
             stringResource(R.string.meter_preview),
             modifier = Modifier.align(Alignment.Center).padding(top = 150.dp),
             style = MaterialTheme.typography.bodySmall.copy(fontSize = MaterialTheme.typography.bodyMedium.fontSize),
             color = AlokColors.TextMuted,
         )
+    }
+}
+
+/** Grid and reticle, drawn over the placeholder and over the live camera feed alike. */
+@Composable
+fun MeterReticle() {
+    Canvas(Modifier.fillMaxSize()) {
+        val grid = AlokColors.Text.copy(alpha = 0.12f)
+        drawLine(grid, Offset(size.width / 3, 0f), Offset(size.width / 3, size.height))
+        drawLine(grid, Offset(size.width * 2 / 3, 0f), Offset(size.width * 2 / 3, size.height))
+        drawLine(grid, Offset(0f, size.height / 3), Offset(size.width, size.height / 3))
+        drawLine(grid, Offset(0f, size.height * 2 / 3), Offset(size.width, size.height * 2 / 3))
+        val c = Offset(size.width / 2, size.height / 2)
+        val r = 64.dp.toPx()
+        drawCircle(AlokColors.Amber, r, c, style = Stroke(2.5.dp.toPx()))
+        drawCircle(AlokColors.Amber, 5.dp.toPx(), c)
+        val cap = StrokeCap.Round
+        val w = 2.5.dp.toPx()
+        drawLine(AlokColors.Amber, Offset(c.x, c.y - r), Offset(c.x, c.y - r + 14.dp.toPx()), w, cap)
+        drawLine(AlokColors.Amber, Offset(c.x, c.y + r), Offset(c.x, c.y + r - 14.dp.toPx()), w, cap)
+        drawLine(AlokColors.Amber, Offset(c.x - r, c.y), Offset(c.x - r + 14.dp.toPx(), c.y), w, cap)
+        drawLine(AlokColors.Amber, Offset(c.x + r, c.y), Offset(c.x + r - 14.dp.toPx(), c.y), w, cap)
     }
 }
