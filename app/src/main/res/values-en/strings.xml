@@ -146,4 +146,11 @@
     <string name="topup_pack">৳29 · 30 feedbacks</string>
     <string name="giftcard_title">No card?</string>
     <string name="giftcard_sub">See how to buy a Google Play gift card with bKash</string>
+    <string name="picker_title">Choose your phone</string>
+    <string name="picker_other_brand">Other brand</string>
+    <string name="picker_brand_label">Brand</string>
+    <string name="picker_model_label">Model</string>
+    <string name="picker_model_hint">For example Redmi Note 13. See Settings › About phone</string>
+    <string name="picker_save">Save</string>
+    <string name="setup_detecting">Finding your phone…</string>
 </resources>

@@ -19,6 +19,11 @@ class DeviceProbe(private val context: Context) {
 
     data class Result(val phoneName: String, val limits: DeviceLimits)
 
+    companion object {
+        /** Name Android reports for this phone, e.g. "Xiaomi 23129RAA4G". Often a model code, hence "not my phone". */
+        fun buildName(): String = "${Build.MANUFACTURER.replaceFirstChar { it.uppercase() }} ${Build.MODEL}"
+    }
+
     fun probe(): Result? {
         val manager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
         val back = backCameras(manager)
@@ -58,7 +63,7 @@ class DeviceProbe(private val context: Context) {
             hasOis = ois,
             manualSupported = manual,
         )
-        return Result("${Build.MANUFACTURER.replaceFirstChar { it.uppercase() }} ${Build.MODEL}", limits)
+        return Result(buildName(), limits)
     }
 
     private fun backCameras(manager: CameraManager): List<CameraCharacteristics> {

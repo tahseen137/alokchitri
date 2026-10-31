@@ -1,7 +1,12 @@
 package com.alokchitri.app.ui
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.alokchitri.app.camera.DeviceProbe
+import com.alokchitri.app.data.Prefs
 import com.alokchitri.app.data.SampleData
+import com.alokchitri.app.ui.screens.PhoneBrand
 import com.alokchitri.engine.DeviceLimits
 import com.alokchitri.engine.LightMeter
 import com.alokchitri.engine.LightReading
@@ -11,9 +16,17 @@ import com.alokchitri.engine.ShotGoal
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 data class FlowState(
+    /** Null until the probe has run; the Setup screen shows a placeholder meanwhile. */
+    val phoneName: String? = null,
+    /** Brand for the How-to tabs, guessed from the phone name; null for brands without a guide. */
+    val brand: PhoneBrand? = null,
+    /** Sample limits until the Camera2 probe answers, and if the phone reports no back camera at all. */
     val device: DeviceLimits = SampleData.device,
     val goal: ShotGoal = ShotGoal.INDOOR_LOW_LIGHT,
     /** Live brightness. 5.0 = dim room, so the screens have something sensible before the camera is wired. */
@@ -27,12 +40,32 @@ data class FlowState(
 
 /**
  * Holds the "new shot" flow: goal -> light reading -> recommendation -> floating card ticks.
- * TODO: replace [onLightReading] callers with the Camera2 AE callback (see camera/AeMeterCallback.kt)
- * and [FlowState.device] with the result of camera/DeviceProbe.
+ * TODO: replace [onLightReading] callers with the Camera2 AE callback (see camera/AeMeterCallback.kt).
  */
-class FlowViewModel : ViewModel() {
+class FlowViewModel(app: Application) : AndroidViewModel(app) {
+    private val prefs = Prefs(app)
     private val _state = MutableStateFlow(FlowState())
     val state: StateFlow<FlowState> = _state.asStateFlow()
+
+    val setupDone: Boolean get() = prefs.setupDone
+
+    init {
+        viewModelScope.launch {
+            val probed = withContext(Dispatchers.Default) { runCatching { DeviceProbe(app).probe() }.getOrNull() }
+            val name = prefs.phoneNameOverride ?: probed?.phoneName ?: DeviceProbe.buildName()
+            _state.update { it.copy(phoneName = name, brand = PhoneBrand.guess(name), device = probed?.limits ?: it.device) }
+        }
+    }
+
+    fun confirmSetup() {
+        prefs.setupDone = true
+    }
+
+    /** The user corrected the phone name. Camera2 limits stay as probed: they describe the real hardware. */
+    fun setPhoneName(name: String) {
+        prefs.phoneNameOverride = name
+        _state.update { it.copy(phoneName = name, brand = PhoneBrand.guess(name)) }
+    }
 
     private val smoother = LightMeter.Smoother()
 
