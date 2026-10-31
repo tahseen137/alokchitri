@@ -54,6 +54,7 @@ fun RecommendScreen(
     onStartCard: () -> Unit,
     onSaveRecipe: () -> Unit,
     onWhereToFind: () -> Unit,
+    onHome: () -> Unit = onBack,
 ) {
     Column(Modifier.fillMaxSize().background(AlokColors.Ground).padding(horizontal = 20.dp).padding(top = 8.dp, bottom = 24.dp)) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -64,7 +65,11 @@ fun RecommendScreen(
         }
 
         when (result) {
-            is RecommendationResult.ManualUnsupported -> ManualUnsupported()
+            is RecommendationResult.ManualUnsupported -> {
+                Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) { ManualUnsupported() }
+                Spacer(Modifier.height(12.dp))
+                PrimaryButton(stringResource(R.string.manual_home), onHome)
+            }
             is RecommendationResult.Success -> {
                 val rec = result.recommendation
                 Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
@@ -108,11 +113,17 @@ private fun SettingsTable(rec: Recommendation) {
     }
 }
 
+/** No manual control on this phone: say so, then what still helps in the phone's Auto camera. */
 @Composable
 private fun ManualUnsupported() {
     Column(Modifier.padding(top = 24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(stringResource(R.string.manual_title), style = MaterialTheme.typography.headlineSmall, color = AlokColors.Text)
         Text(stringResource(R.string.manual_body), style = MaterialTheme.typography.bodyLarge, color = AlokColors.TextMuted)
+        Spacer(Modifier.height(4.dp))
+        Text(stringResource(R.string.manual_tips_title), style = MaterialTheme.typography.labelMedium, color = AlokColors.Amber)
+        InfoBanner(Icons.Outlined.NightsStay, AlokColors.Green, stringResource(R.string.manual_tip_night))
+        InfoBanner(Icons.Outlined.Info, AlokColors.Green, stringResource(R.string.manual_tip_tap))
+        InfoBanner(Icons.Outlined.Info, AlokColors.Green, stringResource(R.string.manual_tip_steady))
     }
 }
 
