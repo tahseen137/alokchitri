@@ -1,17 +1,16 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
     namespace = "com.alokchitri.app"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.alokchitri.app" // change before publishing
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36 // Play requires a target within a year of the newest Android
         versionCode = 1
         versionName = "0.1.0"
         // AdMob app ID, read by the manifest. Google's sample ID: replace with the real one (with the ad unit in AppConfig).
@@ -61,7 +60,9 @@ dependencies {
     implementation("androidx.exifinterface:exifinterface:1.3.7")    // settings saved in the photo (Feedback)
     implementation("com.android.billingclient:billing-ktx:8.0.0")   // lifetime unlock + feedback top-up
     implementation("com.google.android.gms:play-services-ads:24.4.0") // rewarded ad for one extra feedback
-    testImplementation(kotlin("test"))
+    // The ads SDK pulls WorkManager 2.7 (Room 2.2), whose database R8 strips in release builds: crash at start.
+    implementation("androidx.work:work-runtime:2.11.2")
+    testImplementation(kotlin("test-junit")) // JUnit 4 runner for Android unit tests
     testImplementation("org.json:json:20240303") // the real org.json; android.jar only has stubs on the JVM
 
 }

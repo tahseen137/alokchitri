@@ -39,6 +39,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -72,12 +74,14 @@ fun FloatingCard(
     val progress = stringResource(R.string.card_progress_fmt, localizedNumber(checked.size), localizedNumber(items.size))
 
     if (minimized) {
+        val expand = stringResource(R.string.card_expand)
         Surface(
             onClick = { onMinimizedChange(false) },
             shape = CircleShape,
             color = AlokColors.Amber,
             contentColor = AlokColors.OnAmber,
             modifier = Modifier.height(48.dp).shadow(8.dp, CircleShape)
+                .semantics { onClick(label = expand) { onMinimizedChange(false); true } }
                 .pointerInput(Unit) { detectDragGestures { change, drag -> change.consume(); onDrag(drag.x, drag.y) } },
         ) {
             Row(Modifier.padding(start = 14.dp, end = 18.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
