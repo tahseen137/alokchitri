@@ -166,4 +166,11 @@
     <string name="recipes_delete">Delete</string>
     <string name="recipes_delete_cd">Delete recipe</string>
     <string name="recipes_delete_title" formatted="true">Delete “%1$s”?</string>
+    <string name="feedback_pick">Pick a photo</string>
+    <string name="feedback_photo_cd">The photo you picked</string>
+    <string name="feedback_no_exif">This photo has no saved settings. We\'ll still comment on the picture.</string>
+    <string name="feedback_loading">Looking at your photo…</string>
+    <string name="feedback_error">Couldn\'t get feedback. Check your internet and try again. This didn\'t use a free feedback.</string>
+    <string name="feedback_unreadable">This file couldn\'t be opened as a photo. Pick another one.</string>
+    <string name="feedback_out">Today\'s free feedback is used up. Watch an ad for one more, or buy a top-up.</string>
 </resources>

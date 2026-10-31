@@ -3,7 +3,7 @@ package com.alokchitri.app.data
 import com.alokchitri.engine.DeviceLimits
 import com.alokchitri.engine.LensType
 
-/** Placeholder values used until the real sources are wired up (device fallback, feedback quota). They are not real user data. */
+/** Placeholder values used until the real sources are wired up (device fallback until Camera2 answers). They are not real user data. */
 object SampleData {
     const val PHONE_NAME = "Xiaomi Redmi Note 13"
 
@@ -17,7 +17,4 @@ object SampleData {
         rawSupported = true,
         hasOis = false,
     )
-
-    const val FREE_FEEDBACKS_PER_DAY = 3
-    const val FREE_FEEDBACKS_LEFT = 2
 }

@@ -166,4 +166,11 @@
     <string name="recipes_delete">মুছে ফেলুন</string>
     <string name="recipes_delete_cd">রেসিপি মুছুন</string>
     <string name="recipes_delete_title" formatted="true">“%1$s” মুছে ফেলবেন?</string>
+    <string name="feedback_pick">ছবি বেছে নিন</string>
+    <string name="feedback_photo_cd">আপনার বেছে নেওয়া ছবি</string>
+    <string name="feedback_no_exif">এই ছবিতে সেটিং সেভ নেই। তবু ছবি দেখে পরামর্শ দেব।</string>
+    <string name="feedback_loading">ছবি দেখা হচ্ছে…</string>
+    <string name="feedback_error">উত্তর আনা গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন। এতে আপনার ফ্রি ফিডব্যাক কাটা হয়নি।</string>
+    <string name="feedback_unreadable">এই ফাইলটি ছবি হিসেবে খোলা গেল না। অন্য একটি ছবি বেছে নিন।</string>
+    <string name="feedback_out">আজকের ফ্রি ফিডব্যাক শেষ। একটি বিজ্ঞাপন দেখে আরও একটি নিন, বা টপ-আপ কিনুন।</string>
 </resources>
