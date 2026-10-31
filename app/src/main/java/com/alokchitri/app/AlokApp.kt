@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
@@ -31,8 +32,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.alokchitri.app.camera.Camera2PreviewHost
 import com.alokchitri.app.data.BrandGuideRepository
-import com.alokchitri.app.data.SampleData
 import com.alokchitri.app.overlay.FloatingCardService
+import com.alokchitri.app.ui.FeedbackViewModel
 import com.alokchitri.app.ui.FlowViewModel
 import com.alokchitri.app.ui.components.AlokNavBar
 import com.alokchitri.app.ui.components.AlokTab
@@ -41,7 +42,6 @@ import com.alokchitri.app.ui.label
 import com.alokchitri.app.ui.screens.AppLanguage
 import com.alokchitri.app.ui.screens.CardItem
 import com.alokchitri.app.ui.screens.FeedbackScreen
-import com.alokchitri.app.ui.screens.FeedbackUiState
 import com.alokchitri.app.ui.screens.GoalScreen
 import com.alokchitri.app.ui.screens.HomeScreen
 import com.alokchitri.app.ui.screens.HowToScreen
@@ -49,7 +49,6 @@ import com.alokchitri.app.ui.screens.HowToStep
 import com.alokchitri.app.ui.screens.MeterScreen
 import com.alokchitri.app.ui.screens.PhoneBrand
 import com.alokchitri.app.ui.screens.PhonePickerDialog
-import com.alokchitri.app.ui.screens.PhotoMeta
 import com.alokchitri.app.ui.screens.RecipesScreen
 import com.alokchitri.app.ui.screens.SaveRecipeDialog
 import com.alokchitri.app.ui.screens.RecommendScreen
@@ -89,6 +88,7 @@ fun AlokApp(
     language: AppLanguage,
     onLanguageChange: (AppLanguage) -> Unit,
     flow: FlowViewModel = viewModel(),
+    feedback: FeedbackViewModel = viewModel(),
 ) {
     val nav = rememberNavController()
     val state by flow.state.collectAsStateWithLifecycle()
@@ -101,6 +101,14 @@ fun AlokApp(
     // Read once: after Setup is confirmed the next launch opens straight on Home.
     val startRoute = remember { if (flow.setupDone) Routes.HOME else Routes.WELCOME }
     val recipes by flow.recipes.collectAsStateWithLifecycle()
+    val feedbackState by feedback.state.collectAsStateWithLifecycle()
+    val feedbackLeft by feedback.left.collectAsStateWithLifecycle()
+    val feedbackLeftToday by feedback.leftToday.collectAsStateWithLifecycle()
+    val langCode = if (language == AppLanguage.EN) "en" else "bn"
+    // System photo picker: no storage permission needed (spec).
+    val photoPicker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) feedback.onPhotoPicked(uri, langCode, state.phoneName)
+    }
     var showSaveRecipe by remember { mutableStateOf(false) }
     val cardTitle = stringResource(state.goal.titleRes())
     val rec = (state.result as? RecommendationResult.Success)?.recommendation
@@ -197,8 +205,8 @@ fun AlokApp(
 
             composable(Routes.HOME) {
                 HomeScreen(
-                    freeLeft = SampleData.FREE_FEEDBACKS_LEFT,
-                    freeTotal = SampleData.FREE_FEEDBACKS_PER_DAY,
+                    freeLeft = feedbackLeftToday,
+                    freeTotal = feedback.quota.dailyLimit,
                     lastRecipe = recipes.firstOrNull(),
                     onNewShot = { nav.navigate(Routes.GOAL) },
                     onSettings = { nav.navigate(Routes.UPGRADE) }, // TODO: real settings screen
@@ -239,7 +247,6 @@ fun AlokApp(
 
             composable(Routes.HOWTO) {
                 val bundled = genericSteps()
-                val langCode = if (language == AppLanguage.EN) "en" else "bn"
                 // Null until the download (or cached copy) answers, and if neither exists: then the bundled steps.
                 val guide by produceState<Map<PhoneBrand, List<HowToStep>>?>(null, langCode) {
                     value = BrandGuideRepository(context).load(langCode)
@@ -254,17 +261,12 @@ fun AlokApp(
 
             composable(Routes.FEEDBACK) {
                 FeedbackScreen(
-                    state = FeedbackUiState.Ready(
-                        PhotoMeta(listOf("ISO 3200", "1/30", stringResource(R.string.lens_main))),
-                        com.alokchitri.app.ui.screens.FeedbackResult(
-                            "ISO অনেক বেশি ছিল, তাই ছবিতে দানা দানা নয়েজ এসেছে। শাটারও ধীর, হাত কাঁপলে ঝাপসা হয়।",
-                            "ISO 800 রাখুন, শাটার 1/60। কনুই শরীরে চেপে ধরুন বা দেয়ালে ঠেস দিন।",
-                        ),
-                    ), // TODO: replace with the photo-picker + Edge Function flow
-                    freeLeft = SampleData.FREE_FEEDBACKS_LEFT,
-                    onPickPhoto = { /* TODO: PickVisualMedia */ },
+                    state = feedbackState,
+                    freeLeft = feedbackLeft,
+                    onPickPhoto = { photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
                     onWatchAd = { /* TODO: AdMob rewarded */ },
                     onTopUp = { nav.navigate(Routes.UPGRADE) },
+                    onRetry = { feedback.retry(langCode, state.phoneName) },
                 )
             }
 

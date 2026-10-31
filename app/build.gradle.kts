@@ -56,8 +56,9 @@ dependencies {
     implementation("androidx.savedstate:savedstate-ktx:1.2.1")
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")            // How-to screenshots
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
+    implementation("androidx.exifinterface:exifinterface:1.3.7")    // settings saved in the photo (Feedback)
     testImplementation(kotlin("test"))
     testImplementation("org.json:json:20240303") // the real org.json; android.jar only has stubs on the JVM
 
-    // Later: Play Billing (com.android.billingclient:billing-ktx), Supabase client, AdMob (play-services-ads), CameraX only if you need it.
+    // Later: Play Billing (com.android.billingclient:billing-ktx), AdMob (play-services-ads).
 }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -54,7 +55,7 @@ import com.alokchitri.app.R
 import com.alokchitri.app.ui.theme.AlokColors
 import com.alokchitri.app.ui.theme.AlokShapes
 
-/** Amber pill, 56 dp tall. One per screen. */
+/** Amber pill, at least 56 dp tall: long (Bangla) labels wrap and the button grows instead of clipping. One per screen. */
 @Composable
 fun PrimaryButton(
     text: String,
@@ -64,7 +65,7 @@ fun PrimaryButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.fillMaxWidth().height(56.dp),
+        modifier = modifier.fillMaxWidth().heightIn(min = 56.dp),
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(containerColor = AlokColors.Amber, contentColor = AlokColors.OnAmber),
     ) {
@@ -72,11 +73,11 @@ fun PrimaryButton(
             Icon(icon, contentDescription = null, modifier = Modifier.size(22.dp))
             Spacer(Modifier.width(10.dp))
         }
-        Text(text, style = MaterialTheme.typography.labelLarge)
+        Text(text, style = MaterialTheme.typography.labelLarge, textAlign = TextAlign.Center)
     }
 }
 
-/** Outlined pill, 48 dp tall. [accent] = amber outline and text (used for "watch an ad"). */
+/** Outlined pill, at least 48 dp tall, growing for wrapped labels. [accent] = amber outline and text (used for "watch an ad"). */
 @Composable
 fun SecondaryButton(
     text: String,
@@ -88,7 +89,7 @@ fun SecondaryButton(
     val tint = if (accent) AlokColors.Amber else AlokColors.Text
     OutlinedButton(
         onClick = onClick,
-        modifier = modifier.height(48.dp),
+        modifier = modifier.heightIn(min = 48.dp),
         shape = CircleShape,
         border = BorderStroke(1.dp, if (accent) AlokColors.Amber else AlokColors.Outline),
         colors = ButtonDefaults.outlinedButtonColors(contentColor = tint),
@@ -97,7 +98,7 @@ fun SecondaryButton(
             Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
         }
-        Text(text, style = MaterialTheme.typography.labelMedium)
+        Text(text, style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center)
     }
 }
 
