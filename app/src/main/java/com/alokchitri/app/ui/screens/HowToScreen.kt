@@ -39,7 +39,19 @@ import com.alokchitri.app.ui.components.PrimaryButton
 import com.alokchitri.app.ui.localizedNumber
 import com.alokchitri.app.ui.theme.AlokColors
 
-enum class PhoneBrand(val displayName: String) { XIAOMI("Xiaomi"), SAMSUNG("Samsung"), REALME("Realme") }
+enum class PhoneBrand(val displayName: String, private val aliases: List<String>) {
+    XIAOMI("Xiaomi", listOf("xiaomi", "redmi", "poco")),
+    SAMSUNG("Samsung", listOf("samsung", "galaxy")),
+    REALME("Realme", listOf("realme"));
+
+    companion object {
+        /** Brand with a how-to guide whose name or sub-brand appears in [phoneName]; null if none. */
+        fun guess(phoneName: String): PhoneBrand? {
+            val lower = phoneName.lowercase()
+            return entries.firstOrNull { b -> b.aliases.any { it in lower } }
+        }
+    }
+}
 
 /**
  * Screen 8 · Brand how-to. v1 shows three generic steps per brand; the real steps and screenshots come from

@@ -146,4 +146,11 @@
     <string name="topup_pack">৳29 · ৩০টি</string>
     <string name="giftcard_title">কার্ড নেই?</string>
     <string name="giftcard_sub">বিকাশ দিয়ে Google Play গিফট কার্ড কেনার গাইড দেখুন</string>
+    <string name="picker_title">আপনার ফোন বেছে নিন</string>
+    <string name="picker_other_brand">অন্য ব্র্যান্ড</string>
+    <string name="picker_brand_label">ব্র্যান্ড</string>
+    <string name="picker_model_label">মডেল</string>
+    <string name="picker_model_hint">যেমন Redmi Note 13। সেটিংস › ফোন সম্পর্কে দেখুন</string>
+    <string name="picker_save">সেভ করুন</string>
+    <string name="setup_detecting">ফোন চেনা হচ্ছে…</string>
 </resources>

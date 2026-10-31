@@ -41,6 +41,7 @@ import com.alokchitri.app.ui.screens.HowToScreen
 import com.alokchitri.app.ui.screens.HowToStep
 import com.alokchitri.app.ui.screens.MeterScreen
 import com.alokchitri.app.ui.screens.PhoneBrand
+import com.alokchitri.app.ui.screens.PhonePickerDialog
 import com.alokchitri.app.ui.screens.PhotoMeta
 import com.alokchitri.app.ui.screens.RecipesScreen
 import com.alokchitri.app.ui.screens.RecommendScreen
@@ -88,6 +89,9 @@ fun AlokApp(
 
     // Floating card start: needs "display over other apps" once.
     var showPermission by remember { mutableStateOf(false) }
+    var showPhonePicker by remember { mutableStateOf(false) }
+    // Read once: after Setup is confirmed the next launch opens straight on Home.
+    val startRoute = remember { if (flow.setupDone) Routes.HOME else Routes.WELCOME }
     val cardTitle = stringResource(state.goal.titleRes())
     val rec = (state.result as? RecommendationResult.Success)?.recommendation
     val cardItems = rec?.let { cardItemsFor(it) }.orEmpty()
@@ -116,6 +120,14 @@ fun AlokApp(
         )
     }
 
+    if (showPhonePicker) {
+        PhonePickerDialog(
+            initialBrand = state.brand,
+            onDismiss = { showPhonePicker = false },
+            onSave = { name -> flow.setPhoneName(name); showPhonePicker = false },
+        )
+    }
+
     val currentTab = when (route) {
         Routes.HOME -> AlokTab.HOME
         Routes.FEEDBACK -> AlokTab.FEEDBACK
@@ -129,7 +141,7 @@ fun AlokApp(
             if (currentTab != null) AlokNavBar(currentTab) { tab -> nav.navigateTab(TAB_ROUTES.getValue(tab)) }
         },
     ) { padding ->
-        NavHost(nav, startDestination = Routes.WELCOME, modifier = Modifier.padding(padding)) {
+        NavHost(nav, startDestination = startRoute, modifier = Modifier.padding(padding)) {
 
             composable(Routes.WELCOME) {
                 WelcomeScreen(language, onLanguageChange, onStart = { nav.navigate(Routes.SETUP) })
@@ -137,11 +149,14 @@ fun AlokApp(
 
             composable(Routes.SETUP) {
                 SetupScreen(
-                    phoneName = SampleData.PHONE_NAME, // TODO: DeviceProbe(context).probe()
+                    phoneName = state.phoneName ?: stringResource(R.string.setup_detecting),
                     device = state.device,
                     onBack = { nav.popBackStack() },
-                    onConfirm = { nav.navigate(Routes.HOME) { popUpTo(Routes.WELCOME) { inclusive = true } } },
-                    onNotMyPhone = { /* TODO: manual model picker */ },
+                    onConfirm = {
+                        flow.confirmSetup()
+                        nav.navigate(Routes.HOME) { popUpTo(Routes.WELCOME) { inclusive = true } }
+                    },
+                    onNotMyPhone = { showPhonePicker = true },
                 )
             }
 
@@ -188,7 +203,7 @@ fun AlokApp(
             composable(Routes.HOWTO) {
                 val stepsByBrand = PhoneBrand.entries.associateWith { genericSteps(it) }
                 HowToScreen(
-                    initialBrand = PhoneBrand.XIAOMI,
+                    initialBrand = state.brand ?: PhoneBrand.XIAOMI,
                     stepsFor = { brand -> stepsByBrand.getValue(brand) }, // TODO: from the remote brand-guide JSON
                     onBack = { nav.popBackStack() },
                     onStartCard = { startCard(); nav.popBackStack() },
