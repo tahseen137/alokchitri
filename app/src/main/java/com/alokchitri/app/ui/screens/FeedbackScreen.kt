@@ -82,6 +82,8 @@ fun FeedbackScreen(
     onWatchAd: () -> Unit,
     onTopUp: () -> Unit,
     onRetry: () -> Unit = {},
+    /** False after the lifetime unlock ("no ads"); the top-up button then takes the full width. */
+    showAdButton: Boolean = true,
 ) {
     val meta = when (state) {
         is FeedbackUiState.Loading -> state.meta
@@ -100,7 +102,7 @@ fun FeedbackScreen(
             Box(
                 Modifier.height(36.dp).clip(CircleShape).background(AlokColors.Surface).border(1.dp, AlokColors.Outline, CircleShape).padding(horizontal = 14.dp),
                 contentAlignment = Alignment.Center,
-            ) { Text(stringResource(R.string.feedback_left_fmt, localizedNumber(freeLeft)), style = MaterialTheme.typography.labelMedium, color = AlokColors.Green) }
+            ) { Text(stringResource(R.string.feedback_left_fmt, localizedNumber(freeLeft)), style = MaterialTheme.typography.labelMedium, color = if (freeLeft > 0) AlokColors.Green else AlokColors.Amber) }
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -173,7 +175,9 @@ fun FeedbackScreen(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             // Same height side by side, even when only one label wraps.
-            SecondaryButton(stringResource(R.string.feedback_watch_ad), onWatchAd, Modifier.weight(1f).fillMaxHeight(), accent = true, icon = Icons.Outlined.PlayCircle)
+            if (showAdButton) {
+                SecondaryButton(stringResource(R.string.feedback_watch_ad), onWatchAd, Modifier.weight(1f).fillMaxHeight(), accent = true, icon = Icons.Outlined.PlayCircle)
+            }
             SecondaryButton(stringResource(R.string.feedback_topup), onTopUp, Modifier.weight(1f).fillMaxHeight(), accent = highlight)
         }
     }

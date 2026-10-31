@@ -177,4 +177,5 @@
     <string name="upgrade_unlocked">আনলক করা আছে</string>
     <string name="upgrade_unlocked_sub">ধন্যবাদ! দিনে প্রায় ২০টি ফিডব্যাক আর রেসিপি সেভ করা চালু আছে।</string>
     <string name="topup_pack_fmt" formatted="true">%1$s · %2$sটি</string>
+    <string name="feedback_no_ad">এই মুহূর্তে কোনো বিজ্ঞাপন নেই। একটু পরে আবার চেষ্টা করুন।</string>
 </resources>

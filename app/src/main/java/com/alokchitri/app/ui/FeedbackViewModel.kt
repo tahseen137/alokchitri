@@ -68,6 +68,16 @@ class FeedbackViewModel(app: Application) : AndroidViewModel(app) {
         job = viewModelScope.launch { ask(language, phone) }
     }
 
+    /**
+     * A rewarded ad was watched: one more feedback for today. If the user was stuck on "out of quota" with a
+     * photo, ask for its feedback right away.
+     */
+    fun onAdRewarded(language: String, phone: String?) {
+        quota.addBonus()
+        refreshQuota()
+        if (_state.value is FeedbackUiState.OutOfQuota) retry(language, phone)
+    }
+
     /** Called after a rewarded ad or a purchase changed the quota. */
     fun refreshQuota() {
         _left.value = quota.available

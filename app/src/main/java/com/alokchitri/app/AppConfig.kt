@@ -25,5 +25,11 @@ object AppConfig {
     /** Feedbacks one top-up purchase adds. */
     const val TOPUP_CREDITS = 30
 
+    /**
+     * AdMob rewarded ad unit for "watch an ad for one more feedback". This is Google's test unit, which always
+     * fills with a test ad; replace it and the app ID in app/build.gradle.kts with the real ones before release.
+     */
+    const val REWARDED_AD_UNIT = "ca-app-pub-3940256099942544/5224354917"
+
     const val BRAND_GUIDE_URL = "https://raw.githubusercontent.com/tahseen137/alokchitri/main/guides/brand-guides.json"
 }

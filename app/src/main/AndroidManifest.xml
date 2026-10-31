@@ -38,6 +38,11 @@
                 android:value="Shows a draggable checklist of recommended camera settings over the user's camera app" />
         </service>
 
+        <!-- AdMob: rewarded ad on the Feedback screen. The value comes from app/build.gradle.kts. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
+
         <!-- Lets AppCompat remember the language chosen with the in-app toggle on Android 12 and below. -->
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
