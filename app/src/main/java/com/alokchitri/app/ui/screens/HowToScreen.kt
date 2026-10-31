@@ -27,6 +27,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import coil3.compose.AsyncImage
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -113,10 +115,7 @@ fun HowToScreen(
     }
 }
 
-/**
- * 84 x 112 dp. With a [url], load the screenshot (add Coil: io.coil-kt:coil-compose and use AsyncImage);
- * without one, show the dashed placeholder from the design.
- */
+/** 84 x 112 dp. The screenshot when there is one (cropped to fill), else the dashed placeholder from the design. */
 @Composable
 private fun ScreenshotBox(number: Int, url: String?) {
     Box(
@@ -125,7 +124,6 @@ private fun ScreenshotBox(number: Int, url: String?) {
             .border(1.dp, AlokColors.OutlineStrong, MaterialTheme.shapes.small),
         contentAlignment = Alignment.Center,
     ) {
-        // TODO(coil): if (url != null) AsyncImage(model = url, contentDescription = null, contentScale = ContentScale.Crop)
         Text(
             stringResource(R.string.howto_screenshot_fmt, localizedNumber(number)),
             style = MaterialTheme.typography.labelSmall,
@@ -133,5 +131,9 @@ private fun ScreenshotBox(number: Int, url: String?) {
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(6.dp),
         )
+        // Drawn over the placeholder, which stays visible while loading or if the image fails.
+        if (url != null) {
+            AsyncImage(model = url, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+        }
     }
 }

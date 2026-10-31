@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "brands": {
+    "XIAOMI": [
+      { "bn": "ক্যামেরা অ্যাপ খুলে নিচের মোডের সারি ডানে টানুন, তারপর “More” বা “আরও” চাপুন", "en": "Open the Camera app, swipe the mode row and tap “More”", "screenshot": null },
+      { "bn": "“Pro” চাপুন। নিচে ISO, S, WB, EV বোতাম দেখাবে", "en": "Tap “Pro”. ISO, S, WB and EV buttons appear at the bottom", "screenshot": null },
+      { "bn": "যেকোনো বোতাম চাপুন, তারপর চাকা ঘুরিয়ে কার্ডের মান বসান", "en": "Tap a button, then turn the dial to the value on the card", "screenshot": null }
+    ],
+    "SAMSUNG": [
+      { "bn": "ক্যামেরা অ্যাপ খুলে মোডের সারিতে “MORE” চাপুন", "en": "Open the Camera app and tap “MORE” in the mode row", "screenshot": null },
+      { "bn": "“PRO” চাপুন। নিচে ISO, SPEED, EV, WB দেখাবে", "en": "Tap “PRO”. ISO, SPEED, EV and WB appear at the bottom", "screenshot": null },
+      { "bn": "SPEED মানে শাটার। প্রতিটি চেপে স্লাইডার টেনে মান বসান", "en": "SPEED is the shutter. Tap each one and drag the slider to the value", "screenshot": null }
+    ],
+    "REALME": [
+      { "bn": "ক্যামেরা অ্যাপ খুলে মোডের সারিতে “More” চাপুন", "en": "Open the Camera app and tap “More” in the mode row", "screenshot": null },
+      { "bn": "“Expert” বা “Pro” চাপুন। নিচে ISO, S, WB, EV দেখাবে", "en": "Tap “Expert” or “Pro”. ISO, S, WB and EV appear at the bottom", "screenshot": null },
+      { "bn": "প্রতিটি চেপে স্কেল ঘুরিয়ে কার্ডের মান বসান", "en": "Tap each one and turn the scale to the value on the card", "screenshot": null }
+    ]
+  }
+}

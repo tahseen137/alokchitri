@@ -54,5 +54,10 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-service:2.8.7")   // for the overlay's lifecycle owner
     implementation("androidx.savedstate:savedstate-ktx:1.2.1")
+    implementation("io.coil-kt.coil3:coil-compose:3.3.0")            // How-to screenshots
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
+    testImplementation(kotlin("test"))
+    testImplementation("org.json:json:20240303") // the real org.json; android.jar only has stubs on the JVM
+
     // Later: Play Billing (com.android.billingclient:billing-ktx), Supabase client, AdMob (play-services-ads), CameraX only if you need it.
 }
