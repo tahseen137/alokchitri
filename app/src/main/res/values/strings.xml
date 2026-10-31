@@ -45,7 +45,6 @@
     <string name="nav_meter">মাপুন</string>
     <string name="nav_feedback">ফিডব্যাক</string>
     <string name="nav_recipes">রেসিপি</string>
-    <string name="nav_label">প্রধান মেনু</string>
     <string name="goal_step">নতুন শট · ধাপ ১ / ৩</string>
     <string name="goal_title">কেমন ছবি তুলতে চান?</string>
     <string name="goal_sub">একটি বেছে নিন। বাকিটা আমরা সামলে নেব।</string>
@@ -101,8 +100,6 @@
     <string name="card_expand">বড় করুন</string>
     <string name="card_more_fmt" formatted="true">বাকি %1$sটি দেখতে নিচে টানুন</string>
     <string name="card_done_cd">হয়ে গেছে</string>
-    <string name="card_todo_cd">বাকি আছে</string>
-    <string name="card_demo_label">আপনার ফোনের নিজের ক্যামেরা অ্যাপ (উদাহরণ)</string>
     <string name="overlay_channel">ভাসমান সেটিং কার্ড</string>
     <string name="overlay_notification">সেটিং কার্ড চালু আছে</string>
     <string name="overlay_permission_title">ক্যামেরার উপরে কার্ড দেখাতে অনুমতি লাগবে</string>

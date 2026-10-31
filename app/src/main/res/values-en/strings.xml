@@ -45,7 +45,6 @@
     <string name="nav_meter">Meter</string>
     <string name="nav_feedback">Feedback</string>
     <string name="nav_recipes">Recipes</string>
-    <string name="nav_label">Main menu</string>
     <string name="goal_step">New shot · Step 1 of 3</string>
     <string name="goal_title">What kind of photo?</string>
     <string name="goal_sub">Pick one. We\'ll handle the rest.</string>
@@ -101,8 +100,6 @@
     <string name="card_expand">Expand</string>
     <string name="card_more_fmt" formatted="true">Scroll for %1$s more</string>
     <string name="card_done_cd">Done</string>
-    <string name="card_todo_cd">To do</string>
-    <string name="card_demo_label">Your phone\'s own camera app (example)</string>
     <string name="overlay_channel">Floating settings card</string>
     <string name="overlay_notification">Settings card is on</string>
     <string name="overlay_permission_title">Permission needed to show the card over your camera</string>
