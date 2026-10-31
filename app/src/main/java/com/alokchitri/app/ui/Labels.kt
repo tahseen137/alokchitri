@@ -1,7 +1,7 @@
 package com.alokchitri.app.ui
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DirectionsRun
+import androidx.compose.material.icons.automirrored.outlined.DirectionsRun
 import androidx.compose.material.icons.outlined.Landscape
 import androidx.compose.material.icons.outlined.LocationCity
 import androidx.compose.material.icons.outlined.Lightbulb
@@ -94,7 +94,7 @@ fun ShotGoal.icon(): ImageVector = when (this) {
     ShotGoal.PORTRAIT -> Icons.Outlined.Person
     ShotGoal.FOOD_PRODUCT -> Icons.Outlined.Restaurant
     ShotGoal.INDOOR_LOW_LIGHT -> Icons.Outlined.Lightbulb
-    ShotGoal.MOTION -> Icons.Outlined.DirectionsRun
+    ShotGoal.MOTION -> Icons.AutoMirrored.Outlined.DirectionsRun
     ShotGoal.NIGHT_CITY -> Icons.Outlined.LocationCity
     ShotGoal.LANDSCAPE_SUNSET -> Icons.Outlined.Landscape
 }
