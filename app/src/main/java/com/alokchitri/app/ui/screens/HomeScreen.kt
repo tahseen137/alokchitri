@@ -30,7 +30,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alokchitri.app.R
-import com.alokchitri.app.data.SampleData
+import com.alokchitri.app.data.SavedRecipe
+import com.alokchitri.app.ui.chips
 import com.alokchitri.app.ui.components.AlokCard
 import com.alokchitri.app.ui.components.LogoMark
 import com.alokchitri.app.ui.localizedNumber
@@ -42,7 +43,7 @@ import com.alokchitri.app.ui.theme.AlokShapes
 fun HomeScreen(
     freeLeft: Int,
     freeTotal: Int,
-    lastRecipe: SampleData.Recipe?,
+    lastRecipe: SavedRecipe?,
     onNewShot: () -> Unit,
     onSettings: () -> Unit,
 ) {
@@ -93,7 +94,7 @@ fun HomeScreen(
                 Spacer(Modifier.height(6.dp))
                 Text(lastRecipe?.name ?: "—", style = MaterialTheme.typography.titleLarge.copy(fontSize = MaterialTheme.typography.bodyLarge.fontSize), color = AlokColors.Text)
                 if (lastRecipe != null) {
-                    Text(lastRecipe.chips.take(2).joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = AlokColors.TextMuted)
+                    Text(lastRecipe.recommendation.chips().take(2).joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = AlokColors.TextMuted)
                 }
             }
         }

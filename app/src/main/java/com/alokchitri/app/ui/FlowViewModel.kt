@@ -5,6 +5,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.alokchitri.app.camera.DeviceProbe
 import com.alokchitri.app.data.Prefs
+import com.alokchitri.app.data.RecipeStore
+import com.alokchitri.app.data.SavedRecipe
 import com.alokchitri.app.data.SampleData
 import com.alokchitri.app.ui.screens.PhoneBrand
 import com.alokchitri.engine.DeviceLimits
@@ -50,6 +52,11 @@ class FlowViewModel(app: Application) : AndroidViewModel(app) {
 
     val setupDone: Boolean get() = prefs.setupDone
 
+    private val recipeStore = RecipeStore(app)
+    private val _recipes = MutableStateFlow(recipeStore.load())
+    /** Newest first. */
+    val recipes: StateFlow<List<SavedRecipe>> = _recipes.asStateFlow()
+
     init {
         viewModelScope.launch {
             val probed = withContext(Dispatchers.Default) { runCatching { DeviceProbe(app).probe() }.getOrNull() }
@@ -76,6 +83,19 @@ class FlowViewModel(app: Application) : AndroidViewModel(app) {
         val smoothed = smoother.add(rawEv100)
         // Frames arrive ~30 times a second; a tenth of a stop is below anything the engine or gauge resolves.
         _state.update { if (abs(it.ev100 - smoothed) < 0.1 && it.colorTempK == colorTempK) it else it.copy(ev100 = smoothed, colorTempK = colorTempK) }
+    }
+
+    /** Saves the current recommendation; does nothing if the engine could not make one. */
+    fun saveRecipe(name: String) {
+        val rec = (_state.value.result as? RecommendationResult.Success)?.recommendation ?: return
+        val recipe = SavedRecipe(System.currentTimeMillis(), name.trim(), _state.value.goal, rec)
+        _recipes.update { listOf(recipe) + it }
+        recipeStore.save(_recipes.value)
+    }
+
+    fun deleteRecipe(id: Long) {
+        _recipes.update { list -> list.filterNot { it.id == id } }
+        recipeStore.save(_recipes.value)
     }
 
     fun toggleChecked(index: Int) = _state.update {

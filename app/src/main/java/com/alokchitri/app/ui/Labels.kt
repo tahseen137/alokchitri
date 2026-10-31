@@ -17,6 +17,7 @@ import com.alokchitri.engine.CaptureFormat
 import com.alokchitri.engine.FocusMode
 import com.alokchitri.engine.LensType
 import com.alokchitri.engine.LightLevel
+import com.alokchitri.engine.Recommendation
 import com.alokchitri.engine.ShotGoal
 import com.alokchitri.engine.Stability
 import java.text.NumberFormat
@@ -112,3 +113,6 @@ fun localizedNumber(n: Int): String {
     val locale = LocalConfiguration.current.locales[0] ?: Locale.getDefault()
     return NumberFormat.getInstance(locale).format(n)
 }
+
+/** The four values shown as chips on a saved recipe, in the order of the floating card. */
+fun Recommendation.chips(): List<String> = listOf("ISO $iso", shutterLabel, "${whiteBalanceK}K", formatEv(evBias))
