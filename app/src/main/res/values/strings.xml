@@ -158,4 +158,6 @@
     <string name="meter_open_settings">সেটিংস খুলুন</string>
     <string name="meter_retry">আবার চেষ্টা করুন</string>
     <string name="meter_no_reading">ক্যামেরা চালু হলে এখানে আলোর মাপ দেখাবে।</string>
+    <string name="card_close">কার্ড বন্ধ করুন</string>
+    <string name="card_started">কার্ড চালু হয়েছে। এবার ফোনের ক্যামেরা খুলুন।</string>
 </resources>

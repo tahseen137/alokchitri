@@ -1,5 +1,8 @@
 package com.alokchitri.app
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -96,14 +100,23 @@ fun AlokApp(
     val cardTitle = stringResource(state.goal.titleRes())
     val rec = (state.result as? RecommendationResult.Success)?.recommendation
     val cardItems = rec?.let { cardItemsFor(it) }.orEmpty()
+    val cardStarted = stringResource(R.string.card_started)
+    val launchCard: () -> Unit = {
+        FloatingCardService.start(context, cardTitle, cardItems)
+        Toast.makeText(context, cardStarted, Toast.LENGTH_SHORT).show()
+    }
+    // Android 13+: the foreground notification needs this, but the card works without it, so never block on it.
+    val notificationLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
     val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (FloatingCardService.canDrawOverlays(context) && cardItems.isNotEmpty()) {
-            FloatingCardService.start(context, cardTitle, cardItems)
-        }
+        // Re-check on return: the user may have backed out of the settings page without granting.
+        if (FloatingCardService.canDrawOverlays(context) && cardItems.isNotEmpty()) launchCard()
     }
     val startCard: () -> Unit = {
+        if (Build.VERSION.SDK_INT >= 33 &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         if (cardItems.isEmpty()) Unit
-        else if (FloatingCardService.canDrawOverlays(context)) FloatingCardService.start(context, cardTitle, cardItems)
+        else if (FloatingCardService.canDrawOverlays(context)) launchCard()
         else showPermission = true
     }
     if (showPermission) {

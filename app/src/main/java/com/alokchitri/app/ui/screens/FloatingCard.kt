@@ -22,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.DragIndicator
 import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material3.Icon
@@ -39,6 +40,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.alokchitri.app.R
 import com.alokchitri.app.ui.components.LogoMark
@@ -65,6 +67,7 @@ fun FloatingCard(
     onToggle: (Int) -> Unit,
     onMinimizedChange: (Boolean) -> Unit,
     onDrag: (dx: Float, dy: Float) -> Unit,
+    onClose: () -> Unit = {},
 ) {
     val progress = stringResource(R.string.card_progress_fmt, localizedNumber(checked.size), localizedNumber(items.size))
 
@@ -97,13 +100,23 @@ fun FloatingCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Icon(Icons.Outlined.DragIndicator, null, tint = AlokColors.TextMuted, modifier = Modifier.size(20.dp))
-                    Text(title, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold), color = AlokColors.Text)
+                    Text(
+                        title,
+                        modifier = Modifier.weight(1f, fill = false),
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold),
+                        color = AlokColors.Text,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                     Text(progress, style = MaterialTheme.typography.labelSmall, color = AlokColors.Green)
                 }
                 IconButton(onClick = { onMinimizedChange(true) }, modifier = Modifier.size(48.dp)) {
                     Icon(Icons.Outlined.Remove, stringResource(R.string.card_minimize), tint = AlokColors.Text)
+                }
+                IconButton(onClick = onClose, modifier = Modifier.size(48.dp)) {
+                    Icon(Icons.Outlined.Close, stringResource(R.string.card_close), tint = AlokColors.Text)
                 }
             }
 

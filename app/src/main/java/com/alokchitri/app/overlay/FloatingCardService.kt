@@ -3,6 +3,7 @@ package com.alokchitri.app.overlay
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -23,6 +24,7 @@ import androidx.core.app.ServiceCompat
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.alokchitri.app.MainActivity
 import com.alokchitri.app.R
 import com.alokchitri.app.ui.screens.CardItem
 import com.alokchitri.app.ui.screens.FloatingCard
@@ -35,8 +37,9 @@ import com.alokchitri.app.ui.theme.AlokTheme
  * Start it from the Recommend screen with [start]; labels and values are passed as plain strings because
  * the Service has no Activity and must not depend on UI state.
  *
- * UNTESTED SCAFFOLD: verify on real Xiaomi / Samsung / Realme phones. Some skins restrict overlays while
- * another app's camera is in the foreground.
+ * Calling [start] again while the card is up replaces its rows in the same window (no duplicates).
+ * Still to verify on real Xiaomi / Samsung / Realme phones: some skins restrict overlays while another
+ * app's camera is in the foreground.
  */
 class FloatingCardService : Service() {
 
@@ -60,9 +63,21 @@ class FloatingCardService : Service() {
         getSystemService(NotificationManager::class.java).createNotificationChannel(
             NotificationChannel(channelId, getString(R.string.overlay_channel), NotificationManager.IMPORTANCE_LOW),
         )
+        val openApp = PendingIntent.getActivity(
+            this, 0,
+            Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            PendingIntent.FLAG_IMMUTABLE,
+        )
+        val close = PendingIntent.getService(
+            this, 1,
+            Intent(this, FloatingCardService::class.java).setAction(ACTION_STOP),
+            PendingIntent.FLAG_IMMUTABLE,
+        )
         val notification: Notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(android.R.drawable.ic_menu_camera)
             .setContentTitle(getString(R.string.overlay_notification))
+            .setContentIntent(openApp)
+            .addAction(0, getString(R.string.card_close), close)
             .setOngoing(true)
             .build()
         // The specialUse type exists from Android 14 (API 34); older versions must not be passed it.
@@ -99,6 +114,7 @@ class FloatingCardService : Service() {
                         onToggle = { i -> checked = if (i in checked) checked - i else checked + i },
                         onMinimizedChange = { minimized = it },
                         onDrag = { dx, dy -> moveBy(dx, dy) },
+                        onClose = { stopSelf() },
                     )
                 }
             }
@@ -121,11 +137,14 @@ class FloatingCardService : Service() {
         layoutParams = lp
     }
 
+    /** Moves the card, keeping at least its header on screen so it can always be dragged back. */
     private fun moveBy(dx: Float, dy: Float) {
         val view = composeView ?: return
         val lp = layoutParams ?: return
-        lp.x += dx.toInt()
-        lp.y += dy.toInt()
+        val screen = resources.displayMetrics
+        val keep = (48 * screen.density).toInt()
+        lp.x = (lp.x + dx.toInt()).coerceIn(keep - view.width, screen.widthPixels - keep)
+        lp.y = (lp.y + dy.toInt()).coerceIn(0, screen.heightPixels - keep)
         windowManager.updateViewLayout(view, lp)
     }
 
@@ -160,7 +179,7 @@ class FloatingCardService : Service() {
         }
 
         fun stop(context: Context) {
-            context.startService(Intent(context, FloatingCardService::class.java).setAction(ACTION_STOP))
+            context.stopService(Intent(context, FloatingCardService::class.java))
         }
     }
 }
