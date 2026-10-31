@@ -19,6 +19,8 @@ The app spends a free feedback only on a `200`.
 2. Add the environment variable `ANTHROPIC_API_KEY` (Production and Preview). You can also set `FEEDBACK_MODEL`; the default is `claude-opus-5-5`.
 3. Deploy. Then set `AppConfig.FEEDBACK_URL` in the app to `https://<your-domain>/api/photo-feedback`. The placeholder there assumes the project is named `alokchitri-server`.
 
+`vercel.json` lets the function run for up to 60 s, which matches how long the app waits for an answer.
+
 The function asks Claude for structured JSON output at low effort and sets `fallbacks: "default"`, so a safety
 decline is retried on Anthropic's recommended fallback model instead of failing.
 
