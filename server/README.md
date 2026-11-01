@@ -16,12 +16,16 @@ The app spends a free feedback only on a `200`.
 ## Deploy
 
 1. In Vercel, create a new project from this GitHub repo with **Root Directory** = `server`. Use the default framework preset ("Other").
-2. Add the environment variable `ANTHROPIC_API_KEY` (Production and Preview). You can also set `FEEDBACK_MODEL`; the default is `claude-opus-5-5`.
+2. Add environment variables (Production and Preview). You need at least one of the two groups below:
+   - **Local model (Ollama on your own computer):** `OLLAMA_API_URL` (the tunnel address, no trailing path) and `OLLAMA_API_KEY` (sent as `Authorization: Bearer <key>`). Optional: `OLLAMA_FEEDBACK_MODEL`, default `gemma4:26b`, which must be able to read images.
+   - **Claude:** `ANTHROPIC_API_KEY`. Optional: `FEEDBACK_MODEL`, default `claude-opus-5-5`.
+
+   If both are set, the local model goes first (40 s limit) and Claude answers when your computer is off, slow, or gives an unusable answer. If only the local model is set and it is down, the app shows its usual "busy, try again" message and no free feedback is spent.
 3. Deploy. Then set `AppConfig.FEEDBACK_URL` in the app to `https://<your-domain>/api/photo-feedback`. The placeholder there assumes the project is named `alokchitri-server`.
 
 `vercel.json` lets the function run for up to 60 s, which matches how long the app waits for an answer.
 
-The function asks Claude for structured JSON output at low effort and sets `fallbacks: "default"`, so a safety
+When it uses Claude, the function asks for structured JSON output at low effort and sets `fallbacks: "default"`, so a safety
 decline is retried on Anthropic's recommended fallback model instead of failing.
 
 ## Not in v1

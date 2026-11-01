@@ -1,12 +1,20 @@
 // POST /api/photo-feedback: the app's Photo feedback screen (screen 9) sends one downscaled JPEG plus the
-// settings read from its EXIF; Claude answers with "what happened" and "next time" in the user's language.
+// settings read from its EXIF; a model answers with "what happened" and "next time" in the user's language.
+// The model runs on the owner's own computer (Ollama) when OLLAMA_API_URL is set, and on Claude when
+// ANTHROPIC_API_KEY is set. With both set, Ollama goes first and Claude is the backup.
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { z } from "zod";
 
-const client = new Anthropic(); // ANTHROPIC_API_KEY from the Vercel project's environment variables
 const MODEL = process.env.FEEDBACK_MODEL ?? "claude-opus-5-5";
+
+// Local model (Ollama behind a tunnel and an auth proxy). All three are Vercel environment variables.
+const OLLAMA_URL = process.env.OLLAMA_API_URL?.replace(/\/+$/, "");
+const OLLAMA_KEY = process.env.OLLAMA_API_KEY;
+const OLLAMA_MODEL = process.env.OLLAMA_FEEDBACK_MODEL ?? "gemma4:26b";
+// The app waits 60 s. A photo takes about 15 s locally, so give Ollama 40 s before using the backup.
+const OLLAMA_TIMEOUT_MS = 40_000;
 
 // The app sends at most 1280 px on the long side at JPEG quality 80, well under 1 MB of base64.
 const MAX_IMAGE_BASE64 = 1_500_000;
@@ -63,6 +71,55 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     settings.length ? `Settings: ${settings.join(", ")}.` : "Settings: unknown.",
   ].filter(Boolean).join("\n");
 
+  const prompt = { context, image };
+
+  if (OLLAMA_URL) {
+    const local = await askOllama(prompt);
+    if (local) return res.status(200).json(local);
+    // Fall through to Claude when the computer is off, slow, or answered with something unusable.
+  }
+
+  if (!process.env.ANTHROPIC_API_KEY) return res.status(503).json({ error: "busy" });
+  return askClaude(prompt, res);
+}
+
+type Prompt = { context: string; image: string };
+
+async function askOllama({ context, image }: Prompt): Promise<z.infer<typeof FeedbackSchema> | null> {
+  try {
+    const response = await fetch(`${OLLAMA_URL}/api/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(OLLAMA_KEY ? { Authorization: `Bearer ${OLLAMA_KEY}` } : {}),
+      },
+      body: JSON.stringify({
+        model: OLLAMA_MODEL,
+        stream: false,
+        format: z.toJSONSchema(FeedbackSchema), // makes the model answer with exactly these two fields
+        options: { temperature: 0.3 },
+        messages: [
+          { role: "system", content: SYSTEM },
+          { role: "user", content: context, images: [image] },
+        ],
+      }),
+      signal: AbortSignal.timeout(OLLAMA_TIMEOUT_MS),
+    });
+    if (!response.ok) {
+      console.error("ollama status", response.status);
+      return null;
+    }
+    const body = (await response.json()) as { message?: { content?: string } };
+    const parsed = FeedbackSchema.safeParse(JSON.parse(body.message?.content ?? ""));
+    return parsed.success && parsed.data.whatHappened.trim() && parsed.data.nextTime.trim() ? parsed.data : null;
+  } catch (err) {
+    console.error("ollama failed", err);
+    return null;
+  }
+}
+
+async function askClaude({ context, image }: Prompt, res: VercelResponse) {
+  const client = new Anthropic(); // ANTHROPIC_API_KEY from the Vercel project's environment variables
   try {
     const response = await client.beta.messages.parse({
       model: MODEL,
