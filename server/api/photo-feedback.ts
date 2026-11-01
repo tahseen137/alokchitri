@@ -96,6 +96,7 @@ async function askOllama({ context, image }: Prompt): Promise<z.infer<typeof Fee
       body: JSON.stringify({
         model: OLLAMA_MODEL,
         stream: false,
+        think: false, // Gemma otherwise reasons for ~30 s first; a short photo critique is as good without it
         format: z.toJSONSchema(FeedbackSchema), // makes the model answer with exactly these two fields
         options: { temperature: 0.3 },
         messages: [
