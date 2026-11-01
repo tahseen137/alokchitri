@@ -1,12 +1,21 @@
 // POST /api/photo-feedback: the app's Photo feedback screen (screen 9) sends one downscaled JPEG plus the
-// settings read from its EXIF; Claude answers with "what happened" and "next time" in the user's language.
+// settings read from its EXIF; the model answers with "what happened" and "next time" in the user's language.
+// When OLLAMA_API_URL is set, a self-hosted Gemma (Ollama behind an auth proxy and Cloudflare Tunnel) answers
+// first; Claude answers when Ollama is unset, offline or too slow, if ANTHROPIC_API_KEY is set.
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { z } from "zod";
 
-const client = new Anthropic(); // ANTHROPIC_API_KEY from the Vercel project's environment variables
+// Optional: ANTHROPIC_API_KEY from the Vercel project's environment variables. The SDK throws without a key.
+const client = process.env.ANTHROPIC_API_KEY ? new Anthropic() : null;
 const MODEL = process.env.FEEDBACK_MODEL ?? "claude-opus-5-5";
+
+const OLLAMA_URL = process.env.OLLAMA_API_URL?.replace(/\/+$/, "");
+const OLLAMA_KEY = process.env.OLLAMA_API_KEY ?? "";
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL ?? "gemma4:26b";
+// A photo takes about 15 s on gemma4:26b. The function has 60 s, so this leaves Claude time to answer after it.
+const OLLAMA_TIMEOUT_MS = 40_000;
 
 // The app sends at most 1280 px on the long side at JPEG quality 80, well under 1 MB of base64.
 const MAX_IMAGE_BASE64 = 1_500_000;
@@ -41,6 +50,42 @@ Write two short parts:
 
 Use plain everyday words, no jargon beyond setting names. If settings are missing, judge from the picture alone and do not mention that they are missing. Write in the language you are asked for; in Bangla keep setting names and numbers in English (ISO 800, 1/60, 4200K).`;
 
+// Returns null when Ollama can't answer (offline, timeout, rate limited, bad output), so the caller can fall back.
+async function askOllama(image: string, context: string): Promise<z.infer<typeof FeedbackSchema> | null> {
+  if (!OLLAMA_URL) return null;
+  try {
+    const response = await fetch(`${OLLAMA_URL}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${OLLAMA_KEY}` },
+      body: JSON.stringify({
+        model: OLLAMA_MODEL,
+        stream: false,
+        think: false,
+        format: z.toJSONSchema(FeedbackSchema),
+        messages: [
+          { role: "system", content: SYSTEM },
+          { role: "user", content: context, images: [image] },
+        ],
+      }),
+      signal: AbortSignal.timeout(OLLAMA_TIMEOUT_MS),
+    });
+    if (!response.ok) {
+      console.warn(`photo-feedback: Ollama returned ${response.status}`);
+      return null;
+    }
+    const data = (await response.json()) as { message?: { content?: string } };
+    const feedback = FeedbackSchema.safeParse(JSON.parse(data.message?.content ?? ""));
+    if (!feedback.success || !feedback.data.whatHappened.trim() || !feedback.data.nextTime.trim()) {
+      console.warn("photo-feedback: Ollama gave no usable feedback");
+      return null;
+    }
+    return feedback.data;
+  } catch (err) {
+    console.warn("photo-feedback: Ollama failed", err instanceof Error ? err.name : err);
+    return null;
+  }
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") return res.status(405).json({ error: "method_not_allowed" });
 
@@ -62,6 +107,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     phone && `Phone: ${phone}.`,
     settings.length ? `Settings: ${settings.join(", ")}.` : "Settings: unknown.",
   ].filter(Boolean).join("\n");
+
+  const local = await askOllama(image, context);
+  if (local) return res.status(200).json(local);
+  if (!client) {
+    // No Claude to fall back to: the app shows "busy, try again" and keeps the free feedback.
+    if (!OLLAMA_URL) console.error("photo-feedback: set OLLAMA_API_URL or ANTHROPIC_API_KEY");
+    return res.status(503).json({ error: "busy" });
+  }
 
   try {
     const response = await client.beta.messages.parse({
