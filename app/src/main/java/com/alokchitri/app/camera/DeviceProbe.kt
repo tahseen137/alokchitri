@@ -14,6 +14,10 @@ import kotlin.math.hypot
  * Caveat to verify on real phones: many devices expose secondary lenses only as "physical" cameras inside a
  * logical multi-camera, and some OEMs hide them from third-party apps. We use what Android reports and fall
  * back to the main camera alone.
+ *
+ * "manualSupported" here only means Camera2 lets *other apps* set ISO and shutter. Many phones (OnePlus, OPPO,
+ * realme and others) hide that from third-party apps while their own camera app still has Pro mode, which is
+ * where our settings get used. FlowViewModel therefore lets the user confirm Pro mode by hand.
  */
 class DeviceProbe(private val context: Context) {
 
@@ -26,7 +30,8 @@ class DeviceProbe(private val context: Context) {
 
     fun probe(): Result? {
         val manager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-        val back = backCameras(manager)
+        val logical = backCameras(manager, includePhysical = false)
+        val back = backCameras(manager, includePhysical = true)
         if (back.isEmpty()) return null
 
         // Lens classification by 35 mm-equivalent focal length.
@@ -41,21 +46,27 @@ class DeviceProbe(private val context: Context) {
             } ?: continue
             byLens.putIfAbsent(lens, c)
         }
-        val main = byLens[LensType.MAIN] ?: back.first()
+        // The first logical back camera is the one the meter opens and the one the phone's own camera app shoots
+        // with. Picking "main" by focal length instead can land on a 2 MP depth or macro sensor on budget phones
+        // ("main" by focal length also matches those), and they never report manual control.
+        val main = logical.firstOrNull() ?: byLens[LensType.MAIN] ?: back.first()
 
-        val caps = main.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES)?.toSet().orEmpty()
-        val iso = main.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE)
-        val exposure = main.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE)
-        val manual = CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_MANUAL_SENSOR in caps && iso != null && exposure != null
-        val raw = CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_RAW in caps
+        // OEMs often advertise MANUAL_SENSOR on only one of the logical/physical ids, so ask all back cameras.
+        val manualCamera = (listOf(main) + back).firstOrNull { reportsManual(it) }
+        val manual = manualCamera != null
+        val ranges = manualCamera ?: main
+        val iso = ranges.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE)
+        val exposure = ranges.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE)
+        val raw = back.any { CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_RAW in it.capabilities() }
         val ois = main.get(CameraCharacteristics.LENS_INFO_AVAILABLE_OPTICAL_STABILIZATION)
             ?.contains(CameraCharacteristics.LENS_OPTICAL_STABILIZATION_MODE_ON) == true
         val aperture = main.get(CameraCharacteristics.LENS_INFO_AVAILABLE_APERTURES)?.firstOrNull()?.toDouble()
 
         val limits = DeviceLimits.fromCamera2(
+            // Fallbacks for phones that hide the ranges; typical of a stock Pro mode, which the user may confirm.
             isoMin = iso?.lower ?: 100,
-            isoMax = iso?.upper ?: 800,
-            exposureMinNs = exposure?.lower ?: 100_000L,
+            isoMax = iso?.upper ?: 3200,
+            exposureMinNs = exposure?.lower ?: 125_000L,
             exposureMaxNs = exposure?.upper ?: 1_000_000_000L,
             aperture = aperture,
             lenses = byLens.keys,
@@ -66,13 +77,21 @@ class DeviceProbe(private val context: Context) {
         return Result(buildName(), limits)
     }
 
-    private fun backCameras(manager: CameraManager): List<CameraCharacteristics> {
+    private fun CameraCharacteristics.capabilities(): Set<Int> =
+        get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES)?.toSet().orEmpty()
+
+    private fun reportsManual(c: CameraCharacteristics): Boolean =
+        CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_MANUAL_SENSOR in c.capabilities() &&
+            c.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE) != null &&
+            c.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE) != null
+
+    private fun backCameras(manager: CameraManager, includePhysical: Boolean): List<CameraCharacteristics> {
         val out = mutableListOf<CameraCharacteristics>()
         for (id in manager.cameraIdList) {
             val c = runCatching { manager.getCameraCharacteristics(id) }.getOrNull() ?: continue
             if (c.get(CameraCharacteristics.LENS_FACING) != CameraCharacteristics.LENS_FACING_BACK) continue
             out += c
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (includePhysical && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 for (physical in c.physicalCameraIds) {
                     runCatching { manager.getCameraCharacteristics(physical) }.getOrNull()?.let { out += it }
                 }

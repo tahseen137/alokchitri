@@ -15,6 +15,11 @@
       { "bn": "ক্যামেরা অ্যাপ খুলে মোডের সারিতে “More” চাপুন", "en": "Open the Camera app and tap “More” in the mode row", "screenshot": null },
       { "bn": "“Expert” বা “Pro” চাপুন। নিচে ISO, S, WB, EV দেখাবে", "en": "Tap “Expert” or “Pro”. ISO, S, WB and EV appear at the bottom", "screenshot": null },
       { "bn": "প্রতিটি চেপে স্কেল ঘুরিয়ে কার্ডের মান বসান", "en": "Tap each one and turn the scale to the value on the card", "screenshot": null }
+    ],
+    "ONEPLUS": [
+      { "bn": "ক্যামেরা অ্যাপ খুলে মোডের সারিতে “More” বা “আরও” চাপুন", "en": "Open the Camera app and tap “More” in the mode row", "screenshot": null },
+      { "bn": "“Pro” চাপুন। নিচে ISO, S, WB, AF, EV দেখাবে", "en": "Tap “Pro”. ISO, S, WB, AF and EV appear at the bottom", "screenshot": null },
+      { "bn": "প্রতিটি চেপে স্কেল টেনে কার্ডের মান বসান", "en": "Tap each one and slide the scale to the value on the card", "screenshot": null }
     ]
   }
 }

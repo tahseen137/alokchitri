@@ -55,6 +55,7 @@ fun RecommendScreen(
     onSaveRecipe: () -> Unit,
     onWhereToFind: () -> Unit,
     onHome: () -> Unit = onBack,
+    onConfirmProMode: () -> Unit = {},
 ) {
     Column(Modifier.fillMaxSize().background(AlokColors.Ground).padding(horizontal = 20.dp).padding(top = 8.dp, bottom = 24.dp)) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -69,6 +70,8 @@ fun RecommendScreen(
                 Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) { ManualUnsupported() }
                 Spacer(Modifier.height(12.dp))
                 PrimaryButton(stringResource(R.string.manual_home), onHome)
+                Spacer(Modifier.height(10.dp))
+                SecondaryButton(stringResource(R.string.manual_have_pro), onConfirmProMode, Modifier.fillMaxWidth())
             }
             is RecommendationResult.Success -> {
                 val rec = result.recommendation

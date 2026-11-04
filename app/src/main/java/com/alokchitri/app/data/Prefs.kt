@@ -20,6 +20,14 @@ class Prefs(context: Context) {
         get() = sp.getBoolean(KEY_UNLOCKED, false)
         set(value) = sp.edit().putBoolean(KEY_UNLOCKED, value).apply()
 
+    /**
+     * The user says their own camera app has Pro mode even though Camera2 does not report manual control to us
+     * (common on OnePlus/OPPO/realme). The settings we suggest are entered in that camera app, so this is enough.
+     */
+    var proModeConfirmed: Boolean
+        get() = sp.getBoolean(KEY_PRO_CONFIRMED, false)
+        set(value) = sp.edit().putBoolean(KEY_PRO_CONFIRMED, value).apply()
+
     /** Debug builds only: treat the camera as manual-capable, so the full flow can be tried on an emulator. */
     var simulateProMode: Boolean
         get() = sp.getBoolean(KEY_SIMULATE_PRO, false)
@@ -30,5 +38,6 @@ class Prefs(context: Context) {
         const val KEY_PHONE_NAME = "phone_name"
         const val KEY_UNLOCKED = "unlocked"
         const val KEY_SIMULATE_PRO = "debug_simulate_pro"
+        const val KEY_PRO_CONFIRMED = "pro_mode_confirmed"
     }
 }
