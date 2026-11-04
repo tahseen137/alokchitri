@@ -94,8 +94,11 @@ struct ProCameraScreen: View {
     private var sheet: some View {
         let steady = rec.stability == .handheldOk
         return VStack(spacing: 16) {
-            Text(settings.t(steady ? "pro_title" : "pro_hold_still"))
-                .font(AlokType.body).foregroundStyle(steady ? AlokColors.green : AlokColors.amber).multilineTextAlignment(.center)
+            // Only claim the settings are applied while the camera is really running with them.
+            if camera.state == .running || camera.state == .busy {
+                Text(settings.t(steady ? "pro_title" : "pro_hold_still"))
+                    .font(AlokType.body).foregroundStyle(steady ? AlokColors.green : AlokColors.amber).multilineTextAlignment(.center)
+            }
             ZStack {
                 HStack {
                     if let image = camera.lastPhoto {
