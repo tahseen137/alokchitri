@@ -7,10 +7,12 @@ struct FeedbackScreen: View {
     @EnvironmentObject var settings: AppSettings
     @ObservedObject var model: FeedbackModel
     let phone: String
-    var onWatchAd: (() -> Void)? = nil
+    /// Shows a rewarded ad; the result closure gets false when no ad was ready. Nil hides the button (lifetime unlock).
+    var onWatchAd: ((_ language: String, _ phone: String, _ shown: @escaping (Bool) -> Void) -> Void)? = nil
     var onTopUp: (() -> Void)? = nil
 
     @State var pickerItem: PhotosPickerItem?
+    @State var noAd = false
 
     private var outOfQuota: Bool { if case .outOfQuota = model.state { return true } else { return false } }
 
@@ -58,10 +60,16 @@ struct FeedbackScreen: View {
                 case .empty: EmptyView()
                 }
 
+                if noAd {
+                    InfoBanner(systemImage: "play.slash", text: settings.t("feedback_no_ad"))
+                }
                 if onWatchAd != nil || onTopUp != nil {
                     HStack(spacing: 10) {
                         if let onWatchAd {
-                            SecondaryButton(title: settings.t("feedback_watch_ad"), systemImage: "play.circle", accent: true, action: onWatchAd)
+                            SecondaryButton(title: settings.t("feedback_watch_ad"), systemImage: "play.circle", accent: true) {
+                                noAd = false
+                                onWatchAd(settings.language.rawValue, phone) { noAd = !$0 }
+                            }
                         }
                         if let onTopUp {
                             SecondaryButton(title: settings.t("feedback_topup"), accent: outOfQuota, action: onTopUp)
