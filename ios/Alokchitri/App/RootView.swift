@@ -45,17 +45,19 @@ struct MainTabs: View {
     @StateObject var flow = FlowModel()
     @StateObject var recipes = RecipeStore()
     @StateObject var feedback = FeedbackModel()
+    @StateObject var store = PurchaseStore()
+    @State var showUpgrade = false
 
     var body: some View {
         TabView(selection: $tab) {
-            HomeTab(freeLeft: feedback.leftToday, freeTotal: feedback.quota.dailyLimit, onNewShot: { flow.startNewShot(); tab = .meter })
+            HomeTab(freeLeft: feedback.leftToday, freeTotal: feedback.quota.dailyLimit, onNewShot: { flow.startNewShot(); tab = .meter }, onUpgrade: { showUpgrade = true })
                 .tabItem { Label(settings.t("nav_home"), systemImage: "house") }
                 .tag(AlokTab.home)
-            MeterFlow(onExit: { tab = .home })
+            MeterFlow(onExit: { tab = .home }, onUpgrade: { showUpgrade = true })
                 .environmentObject(flow)
                 .tabItem { Label(settings.t("nav_meter"), systemImage: "camera.aperture") }
                 .tag(AlokTab.meter)
-            FeedbackScreen(model: feedback, phone: DeviceProbe.phoneName())
+            FeedbackScreen(model: feedback, phone: DeviceProbe.phoneName(), onTopUp: { showUpgrade = true })
                 .tabItem { Label(settings.t("nav_feedback"), systemImage: "photo") }
                 .tag(AlokTab.feedback)
             RecipesTab(onNew: { flow.startNewShot(); tab = .meter })
@@ -63,6 +65,12 @@ struct MainTabs: View {
                 .tag(AlokTab.recipes)
         }
         .environmentObject(recipes)
+        .environmentObject(store)
+        .onChange(of: store.revision) { _, _ in feedback.refreshQuota() }
+        .fullScreenCover(isPresented: $showUpgrade) {
+            UpgradeScreen(store: store, onClose: { showUpgrade = false })
+                .environmentObject(settings)
+        }
     }
 }
 
@@ -80,8 +88,10 @@ private struct ComingSoon: View {
 private struct MeterFlow: View {
     @EnvironmentObject var flow: FlowModel
     @EnvironmentObject var recipes: RecipeStore
+    @EnvironmentObject var store: PurchaseStore
     @State var path: [Step] = []
     let onExit: () -> Void
+    let onUpgrade: () -> Void
 
     enum Step: Hashable { case meter, recommend, proCamera }
 
@@ -105,6 +115,8 @@ private struct MeterFlow: View {
                                 result: result,
                                 onBack: { path.removeLast() },
                                 onShoot: { path.append(.proCamera) },
+                                canSave: store.unlocked || recipes.recipes.isEmpty,
+                                onNeedUpgrade: onUpgrade,
                                 onSave: { name in
                                     if case .success(let rec) = result { recipes.add(name: name, goal: flow.goal, recommendation: rec) }
                                 },
@@ -136,6 +148,7 @@ private struct HomeTab: View {
     let freeLeft: Int
     let freeTotal: Int
     let onNewShot: () -> Void
+    let onUpgrade: () -> Void
 
     var body: some View {
         NavigationStack {
@@ -148,7 +161,7 @@ private struct HomeTab: View {
             )
             .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(isPresented: $showSettings) {
-                SettingsScreen(phoneName: DeviceProbe.phoneName(), onBack: { showSettings = false })
+                SettingsScreen(phoneName: DeviceProbe.phoneName(), onUpgrade: onUpgrade, onBack: { showSettings = false })
                     .toolbar(.hidden, for: .navigationBar)
                     .toolbar(.hidden, for: .tabBar)
             }
