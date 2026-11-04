@@ -347,7 +347,7 @@ internal class ProCameraSession(
     }.getOrNull()
 
     /** Largest preview size up to 1920 x 1440 with the photo's aspect ratio, so the viewfinder frames the photo. */
-    private fun choosePreviewSize(sizes: Array<Size>, photo: Size): Size {
+    private fun choosePreviewSize(sizes: Array<out Size>, photo: Size): Size {
         val aspect = photo.width.toDouble() / photo.height
         val fitting = sizes.filter { it.width <= 1920 && it.height <= 1440 }
         return fitting.filter { abs(it.width.toDouble() / it.height - aspect) < 0.02 }.maxByOrNull { it.width.toLong() * it.height }
