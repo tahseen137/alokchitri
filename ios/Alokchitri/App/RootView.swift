@@ -73,13 +73,13 @@ private struct ComingSoon: View {
     }
 }
 
-/// New shot: Goal, then Meter. The Recommendation step arrives in the next pull request.
+/// New shot: Goal, Meter, Recommendation, then our own Pro camera.
 private struct MeterFlow: View {
     @EnvironmentObject var flow: FlowModel
     @State var path: [Step] = []
     let onExit: () -> Void
 
-    enum Step: Hashable { case meter, recommend }
+    enum Step: Hashable { case meter, recommend, proCamera }
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -95,8 +95,27 @@ private struct MeterFlow: View {
                         .toolbar(.hidden, for: .navigationBar)
                         .toolbar(.hidden, for: .tabBar)
                     case .recommend:
-                        ComingSoon()
+                        if let result = flow.result {
+                            RecommendScreen(
+                                goal: flow.goal,
+                                result: result,
+                                onBack: { path.removeLast() },
+                                onShoot: { path.append(.proCamera) },
+                                onHome: { path = []; onExit() }
+                            )
                             .toolbar(.hidden, for: .navigationBar)
+                            .toolbar(.hidden, for: .tabBar)
+                        } else {
+                            // No light reading (camera off): go back and measure again.
+                            ComingSoon().toolbar(.hidden, for: .navigationBar)
+                                .onAppear { path.removeLast() }
+                        }
+                    case .proCamera:
+                        if case .success(let rec) = flow.result {
+                            ProCameraScreen(goal: flow.goal, rec: rec, onBack: { path.removeLast() })
+                                .toolbar(.hidden, for: .navigationBar)
+                                .toolbar(.hidden, for: .tabBar)
+                        }
                     }
                 }
         }

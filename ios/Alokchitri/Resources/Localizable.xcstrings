@@ -2177,6 +2177,23 @@
         }
       }
     },
+    "pro_exposure_auto": {
+      "extractionState": "manual",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "এই ক্যামেরা ISO ও শাটার হাতে সেট করতে দেয় না। এক্সপোজার ক্যামেরা নিজেই ঠিক করবে, বাকি সব বসানো হয়েছে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This camera doesn't allow manual ISO and shutter. It will set the exposure itself; everything else is applied."
+          }
+        }
+      }
+    },
     "pro_failed": {
       "extractionState": "manual",
       "localizations": {
@@ -2211,19 +2228,36 @@
         }
       }
     },
+    "pro_photos_denied": {
+      "extractionState": "manual",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ছবি সেভ করতে ফটোজে যোগ করার অনুমতি লাগবে। সেটিংসে গিয়ে অনুমতি দিন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To save the photo we need permission to add to Photos. Allow it in Settings."
+          }
+        }
+      }
+    },
     "pro_saved": {
       "extractionState": "manual",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "ছবি গ্যালারিতে সেভ হয়েছে"
+            "value": "ছবি আপনার ফটোজে সেভ হয়েছে"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Photo saved to your gallery"
+            "value": "Photo saved to Photos"
           }
         }
       }
@@ -2472,13 +2506,13 @@
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pro মোডে এই সেটিং দিন"
+            "value": "আপনার ছবির সেটিং"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Set this in Pro mode"
+            "value": "Settings for your shot"
           }
         }
       }
