@@ -2829,13 +2829,13 @@
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Google Play-তে আপনার কেনাকাটা খোঁজা হচ্ছে…"
+            "value": "App Store-এ আপনার কেনাকাটা খোঁজা হচ্ছে…"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Checking Google Play for your purchases…"
+            "value": "Checking the App Store for your purchases…"
           }
         }
       }
@@ -3390,13 +3390,13 @@
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "পেমেন্টের অপেক্ষায়। Google Play পেমেন্ট পেলে আনলক হয়ে যাবে।"
+            "value": "পেমেন্টের অপেক্ষায়। App Store পেমেন্ট পেলে আনলক হয়ে যাবে।"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Waiting for payment. It unlocks as soon as Google Play receives it."
+            "value": "Waiting for payment. It unlocks as soon as the App Store receives it."
           }
         }
       }
@@ -3407,13 +3407,13 @@
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Google Play দিয়ে পেমেন্ট"
+            "value": "App Store দিয়ে পেমেন্ট"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Paid through Google Play"
+            "value": "Paid through the App Store"
           }
         }
       }
@@ -3458,13 +3458,13 @@
         "bn": {
           "stringUnit": {
             "state": "translated",
-            "value": "Google Play থেকে দাম আনা যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।"
+            "value": "App Store থেকে দাম আনা যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Couldn't load the price from Google Play. Check your internet and try again."
+            "value": "Couldn't load the price from the App Store. Check your internet and try again."
           }
         }
       }

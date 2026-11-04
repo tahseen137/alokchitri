@@ -1,0 +1,31 @@
+{
+  "identifier" : "A4F2C3D1",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : false,
+      "internalID" : "6A0000A1",
+      "localizations" : [
+        { "description" : "No ads, about 20 feedbacks a day, save your favorite recipes", "displayName" : "Lifetime unlock", "locale" : "en_US" }
+      ],
+      "productID" : "lifetime_unlock",
+      "referenceName" : "Lifetime unlock",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "6A0000A2",
+      "localizations" : [
+        { "description" : "30 more photo feedbacks", "displayName" : "30 feedbacks", "locale" : "en_US" }
+      ],
+      "productID" : "feedback_topup_30",
+      "referenceName" : "Feedback top-up",
+      "type" : "Consumable"
+    }
+  ],
+  "settings" : {},
+  "subscriptionGroups" : [],
+  "version" : { "major" : 3, "minor" : 0 }
+}

@@ -8,6 +8,9 @@ struct RecommendScreen: View {
     let result: RecommendationResult
     let onBack: () -> Void
     let onShoot: () -> Void
+    /// False once the free recipe is used and the lifetime unlock is not bought: Save opens the Upgrade screen.
+    var canSave = true
+    var onNeedUpgrade: () -> Void = {}
     let onSave: (String) -> Void
     let onHome: () -> Void
 
@@ -41,7 +44,7 @@ struct RecommendScreen: View {
                 }
                 PrimaryButton(title: settings.t("rec_cta_pro"), systemImage: "camera", action: onShoot).padding(.top, 12)
                 SecondaryButton(title: settings.t(saved ? "recipes_saved" : "rec_save"), systemImage: saved ? "checkmark" : "bookmark", accent: saved) {
-                    showSave = true
+                    if canSave { showSave = true } else { onNeedUpgrade() }
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.top, 10)

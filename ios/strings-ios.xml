@@ -16,4 +16,8 @@
     <string name="pro_saved" bn="ছবি আপনার ফটোজে সেভ হয়েছে" en="Photo saved to Photos"/>
     <string name="pro_photos_denied" bn="ছবি সেভ করতে ফটোজে যোগ করার অনুমতি লাগবে। সেটিংসে গিয়ে অনুমতি দিন।" en="To save the photo we need permission to add to Photos. Allow it in Settings."/>
     <string name="pro_exposure_auto" bn="এই ক্যামেরা ISO ও শাটার হাতে সেট করতে দেয় না। এক্সপোজার ক্যামেরা নিজেই ঠিক করবে, বাকি সব বসানো হয়েছে।" en="This camera doesn\'t allow manual ISO and shutter. It will set the exposure itself; everything else is applied."/>
+    <string name="upgrade_play" bn="App Store দিয়ে পেমেন্ট" en="Paid through the App Store"/>
+    <string name="upgrade_unavailable" bn="App Store থেকে দাম আনা যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।" en="Couldn\'t load the price from the App Store. Check your internet and try again."/>
+    <string name="upgrade_pending" bn="পেমেন্টের অপেক্ষায়। App Store পেমেন্ট পেলে আনলক হয়ে যাবে।" en="Waiting for payment. It unlocks as soon as the App Store receives it."/>
+    <string name="settings_restoring" bn="App Store-এ আপনার কেনাকাটা খোঁজা হচ্ছে…" en="Checking the App Store for your purchases…"/>
 </resources>

@@ -16,6 +16,7 @@ struct FeedbackQuota {
     }
 
     var unlocked: Bool { defaults.bool(forKey: "quota.unlocked") }
+    func setUnlocked(_ value: Bool) { defaults.set(value, forKey: "quota.unlocked") }
     var dailyLimit: Int { unlocked ? Self.unlockedPerDay : Self.freePerDay }
     var topUpCredits: Int { defaults.integer(forKey: "quota.topup") }
 
