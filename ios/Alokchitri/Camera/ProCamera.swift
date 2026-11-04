@@ -135,7 +135,7 @@ final class ProCamera: NSObject, ObservableObject {
         settings.photoQualityPrioritization = .speed
         let id = settings.uniqueID
         let delegate = PhotoDelegate { [weak self] data in
-            Task { @MainActor in
+            Task { @MainActor [weak self] in
                 guard let self else { return }
                 delegates[id] = nil
                 guard let data else {
