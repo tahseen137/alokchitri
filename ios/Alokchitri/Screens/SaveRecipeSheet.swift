@@ -17,7 +17,7 @@ struct SaveRecipeSheet: View {
                     .font(AlokType.bodyLarge).foregroundStyle(AlokColors.text)
                     .focused($focused)
                     .submitLabel(.done)
-                    .onChange(of: name) { if $0.count > 40 { name = String($0.prefix(40)) } }
+                    .onChange(of: name) { _, v in if v.count > 40 { name = String(v.prefix(40)) } }
                     .padding(.horizontal, 16).frame(height: 52)
                     .background(AlokColors.surfaceRaised, in: RoundedRectangle(cornerRadius: AlokRadius.tile, style: .continuous))
                 Text(settings.t("recipes_name_hint")).font(AlokType.caption).foregroundStyle(AlokColors.textMuted)

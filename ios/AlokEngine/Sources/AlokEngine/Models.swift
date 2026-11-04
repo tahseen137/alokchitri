@@ -112,7 +112,7 @@ public struct DeviceLimits: Sendable, Equatable {
     }
 }
 
-public struct Recommendation: Sendable, Equatable {
+public struct Recommendation: Sendable, Hashable {
     public var iso: Int
     public var shutterSeconds: Double
     public var whiteBalanceK: Int
@@ -124,6 +124,13 @@ public struct Recommendation: Sendable, Equatable {
     public var stability: Stability
     public var advice: Set<Advice>
     public var lightLevel: LightLevel
+
+    public init(iso: Int, shutterSeconds: Double, whiteBalanceK: Int, focus: FocusMode, evBias: Double,
+                lens: LensType, format: CaptureFormat, stability: Stability, advice: Set<Advice>, lightLevel: LightLevel) {
+        self.iso = iso; self.shutterSeconds = shutterSeconds; self.whiteBalanceK = whiteBalanceK
+        self.focus = focus; self.evBias = evBias; self.lens = lens; self.format = format
+        self.stability = stability; self.advice = advice; self.lightLevel = lightLevel
+    }
 
     public var shutterLabel: String { formatShutter(shutterSeconds) }
     /// Advice in the order the UI should show it.

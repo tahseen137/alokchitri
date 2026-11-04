@@ -2,7 +2,7 @@ import AlokEngine
 import Foundation
 
 /// A recommendation the user kept, with the name they gave it. Newest first in the store.
-struct SavedRecipe: Identifiable, Equatable {
+struct SavedRecipe: Identifiable, Hashable {
     let id: Int64
     var name: String
     var goal: ShotGoal
@@ -21,7 +21,7 @@ final class RecipeStore: ObservableObject {
         recipes = Self.load(from: url)
     }
 
-    static var defaultURL: URL {
+    nonisolated static var defaultURL: URL {
         let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir.appendingPathComponent("recipes.json")
