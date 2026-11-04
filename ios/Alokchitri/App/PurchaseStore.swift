@@ -35,7 +35,7 @@ final class PurchaseStore: ObservableObject {
         self.quota = quota
         unlocked = quota.unlocked
         updates = Task { [weak self] in
-            for await result in Transaction.updates { await self?.handle(result) }
+            for await result in StoreKit.Transaction.updates { await self?.handle(result) }
         }
         Task { await refresh() }
     }
@@ -50,12 +50,12 @@ final class PurchaseStore: ObservableObject {
             topUpPrice = products[Products.topUp]?.displayPrice
         }
         var owned = false
-        for await result in Transaction.currentEntitlements {
+        for await result in StoreKit.Transaction.currentEntitlements {
             if case .verified(let t) = result, t.productID == Products.unlock, t.revocationDate == nil { owned = true }
         }
         setUnlocked(owned)
         // Consumables that were bought but not yet finished come through here too.
-        for await result in Transaction.unfinished { await handle(result) }
+        for await result in StoreKit.Transaction.unfinished { await handle(result) }
     }
 
     func buy(_ id: String) async {
@@ -78,7 +78,7 @@ final class PurchaseStore: ObservableObject {
         restoring = false
     }
 
-    private func handle(_ result: VerificationResult<Transaction>) async {
+    private func handle(_ result: VerificationResult<StoreKit.Transaction>) async {
         guard case .verified(let t) = result else { return }
         switch t.productID {
         case Products.unlock:
