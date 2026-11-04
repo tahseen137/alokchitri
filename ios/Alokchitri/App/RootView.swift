@@ -44,17 +44,18 @@ struct MainTabs: View {
     @State var tab: AlokTab = .home
     @StateObject var flow = FlowModel()
     @StateObject var recipes = RecipeStore()
+    @StateObject var feedback = FeedbackModel()
 
     var body: some View {
         TabView(selection: $tab) {
-            HomeTab(onNewShot: { flow.startNewShot(); tab = .meter })
+            HomeTab(freeLeft: feedback.leftToday, freeTotal: feedback.quota.dailyLimit, onNewShot: { flow.startNewShot(); tab = .meter })
                 .tabItem { Label(settings.t("nav_home"), systemImage: "house") }
                 .tag(AlokTab.home)
             MeterFlow(onExit: { tab = .home })
                 .environmentObject(flow)
                 .tabItem { Label(settings.t("nav_meter"), systemImage: "camera.aperture") }
                 .tag(AlokTab.meter)
-            ComingSoon()
+            FeedbackScreen(model: feedback, phone: DeviceProbe.phoneName())
                 .tabItem { Label(settings.t("nav_feedback"), systemImage: "photo") }
                 .tag(AlokTab.feedback)
             RecipesTab(onNew: { flow.startNewShot(); tab = .meter })
@@ -132,11 +133,15 @@ private struct MeterFlow: View {
 private struct HomeTab: View {
     @EnvironmentObject var recipes: RecipeStore
     @State var showSettings = false
+    let freeLeft: Int
+    let freeTotal: Int
     let onNewShot: () -> Void
 
     var body: some View {
         NavigationStack {
             HomeScreen(
+                freeLeft: freeLeft,
+                freeTotal: freeTotal,
                 lastRecipe: recipes.last.map { (name: $0.name, chips: $0.recommendation.chips) },
                 onNewShot: onNewShot,
                 onSettings: { showSettings = true }

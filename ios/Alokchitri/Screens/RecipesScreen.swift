@@ -90,10 +90,11 @@ struct RecipesScreen: View {
 /// Chips that wrap onto new lines.
 struct FlowChips: View {
     let items: [String]
+    var background: Color = AlokColors.surfaceRaised
 
     var body: some View {
         FlowLayout(spacing: 6) {
-            ForEach(items, id: \.self) { ValueChip(text: $0) }
+            ForEach(items, id: \.self) { ValueChip(text: $0, background: background) }
         }
     }
 }
