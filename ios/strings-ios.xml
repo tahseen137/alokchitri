@@ -12,4 +12,8 @@
     <string name="setup_pro_missing" bn="এই ক্যামেরায় ম্যানুয়াল কন্ট্রোল পাওয়া যায়নি" en="This camera has no manual control"/>
     <string name="setup_note" bn="সেটিং আমাদের Pro ক্যামেরা নিজেই বসিয়ে দেবে, আপনাকে কোনো মেনু খুঁজতে হবে না।" en="Our Pro camera applies the settings for you, so there are no menus to hunt for."/>
     <string name="setup_no_camera" bn="ক্যামেরা পাওয়া যায়নি। আসল iPhone-এ অ্যাপটি চালান।" en="No camera found. Run the app on a real iPhone."/>
+    <string name="rec_title" bn="আপনার ছবির সেটিং" en="Settings for your shot"/>
+    <string name="pro_saved" bn="ছবি আপনার ফটোজে সেভ হয়েছে" en="Photo saved to Photos"/>
+    <string name="pro_photos_denied" bn="ছবি সেভ করতে ফটোজে যোগ করার অনুমতি লাগবে। সেটিংসে গিয়ে অনুমতি দিন।" en="To save the photo we need permission to add to Photos. Allow it in Settings."/>
+    <string name="pro_exposure_auto" bn="এই ক্যামেরা ISO ও শাটার হাতে সেট করতে দেয় না। এক্সপোজার ক্যামেরা নিজেই ঠিক করবে, বাকি সব বসানো হয়েছে।" en="This camera doesn\'t allow manual ISO and shutter. It will set the exposure itself; everything else is applied."/>
 </resources>
