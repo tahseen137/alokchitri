@@ -39,14 +39,7 @@ struct FeedbackScreen: View {
                         } else if model.hasPhoto {
                             Text(settings.t("feedback_no_exif")).font(AlokType.bodySmall).foregroundStyle(AlokColors.textMuted)
                         }
-                        PhotosPicker(selection: $pickerItem, matching: .images) {
-                            Text(settings.t(model.hasPhoto ? "feedback_pick_other" : "feedback_pick"))
-                                .font(AlokType.label).multilineTextAlignment(.center)
-                                .frame(maxWidth: .infinity, minHeight: 48)
-                                .foregroundStyle(model.hasPhoto ? AlokColors.text : AlokColors.amber)
-                                .overlay(Capsule().strokeBorder(model.hasPhoto ? AlokColors.outline : AlokColors.amber, lineWidth: 1))
-                                .contentShape(Capsule())
-                        }
+                        pickButton(hasPhoto: model.hasPhoto, title: settings.t(model.hasPhoto ? "feedback_pick_other" : "feedback_pick"))
                     }
                 }
 
@@ -89,6 +82,17 @@ struct FeedbackScreen: View {
         .alokScreen()
         .onChange(of: pickerItem) { _, item in
             model.onPicked(item, language: settings.language.rawValue, phone: phone)
+        }
+    }
+
+    private func pickButton(hasPhoto: Bool, title: String) -> some View {
+        PhotosPicker(selection: $pickerItem, matching: .images) {
+            Text(title)
+                .font(AlokType.label).multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity, minHeight: 48)
+                .foregroundStyle(hasPhoto ? AlokColors.text : AlokColors.amber)
+                .overlay(Capsule().strokeBorder(hasPhoto ? AlokColors.outline : AlokColors.amber, lineWidth: 1))
+                .contentShape(Capsule())
         }
     }
 
