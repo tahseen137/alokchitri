@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.NightsStay
+import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material.icons.outlined.PictureInPictureAlt
 import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.MaterialTheme
@@ -52,6 +53,7 @@ fun RecommendScreen(
     result: RecommendationResult,
     onBack: () -> Unit,
     onStartCard: () -> Unit,
+    onProCamera: () -> Unit,
     onSaveRecipe: () -> Unit,
     onWhereToFind: () -> Unit,
     onHome: () -> Unit = onBack,
@@ -86,7 +88,11 @@ fun RecommendScreen(
                     SettingsTable(rec)
                 }
                 Spacer(Modifier.height(12.dp))
-                PrimaryButton(stringResource(R.string.rec_cta_card), onStartCard, icon = Icons.Outlined.PictureInPictureAlt)
+                // One tap: Alokchitri's own camera with every setting already applied.
+                PrimaryButton(stringResource(R.string.rec_cta_pro), onProCamera, icon = Icons.Outlined.PhotoCamera)
+                Spacer(Modifier.height(10.dp))
+                // Or set them by hand in the phone's own camera, with the checklist floating on top.
+                SecondaryButton(stringResource(R.string.rec_cta_card), onStartCard, Modifier.fillMaxWidth(), icon = Icons.Outlined.PictureInPictureAlt)
                 Spacer(Modifier.height(10.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     SecondaryButton(stringResource(R.string.rec_save), onSaveRecipe, Modifier.weight(1f))

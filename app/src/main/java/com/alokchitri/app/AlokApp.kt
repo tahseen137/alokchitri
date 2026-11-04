@@ -55,6 +55,7 @@ import com.alokchitri.app.ui.screens.MeterScreen
 import com.alokchitri.app.ui.screens.PaymentGuideScreen
 import com.alokchitri.app.ui.screens.PhoneBrand
 import com.alokchitri.app.ui.screens.PhonePickerDialog
+import com.alokchitri.app.ui.screens.ProCameraScreen
 import com.alokchitri.app.ui.screens.RecipesScreen
 import com.alokchitri.app.ui.screens.SaveRecipeDialog
 import com.alokchitri.app.ui.screens.RecommendScreen
@@ -82,6 +83,7 @@ object Routes {
     const val UPGRADE = "upgrade"
     const val SETTINGS = "settings"
     const val PAYMENT_GUIDE = "payment_guide"
+    const val PRO_CAMERA = "pro_camera"
 }
 
 private val TAB_ROUTES = mapOf(
@@ -256,6 +258,7 @@ fun AlokApp(
                     result = state.result,
                     onBack = { nav.popBackStack() },
                     onStartCard = startCard,
+                    onProCamera = { nav.navigate(Routes.PRO_CAMERA) },
                     // The first recipe is free; more are part of the lifetime unlock.
                     onSaveRecipe = { if (billing.unlocked || recipes.isEmpty()) showSaveRecipe = true else nav.navigate(Routes.UPGRADE) },
                     onWhereToFind = { nav.navigate(Routes.HOWTO) },
@@ -264,6 +267,13 @@ fun AlokApp(
                     // Turning it on recomputes state.result, so this screen switches straight to the settings.
                     onConfirmProMode = { flow.setProModeConfirmed(true) },
                 )
+            }
+
+            composable(Routes.PRO_CAMERA) {
+                // Only reachable from a successful recommendation; if that changed underneath, go back.
+                val current = rec
+                if (current == null) LaunchedEffect(Unit) { nav.popBackStack() }
+                else ProCameraScreen(goal = state.goal, rec = current, device = state.device, onBack = { nav.popBackStack() })
             }
 
             composable(Routes.HOWTO) {
