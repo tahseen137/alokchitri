@@ -42,13 +42,15 @@ enum AlokTab: Hashable { case home, meter, feedback, recipes }
 struct MainTabs: View {
     @EnvironmentObject var settings: AppSettings
     @State var tab: AlokTab = .home
+    @StateObject var flow = FlowModel()
 
     var body: some View {
         TabView(selection: $tab) {
-            HomeScreen(onNewShot: { tab = .meter })
+            HomeScreen(onNewShot: { flow.startNewShot(); tab = .meter })
                 .tabItem { Label(settings.t("nav_home"), systemImage: "house") }
                 .tag(AlokTab.home)
-            ComingSoon()
+            MeterFlow(onExit: { tab = .home })
+                .environmentObject(flow)
                 .tabItem { Label(settings.t("nav_meter"), systemImage: "camera.aperture") }
                 .tag(AlokTab.meter)
             ComingSoon()
@@ -67,6 +69,36 @@ private struct ComingSoon: View {
         ZStack {
             AlokColors.ground.ignoresSafeArea()
             Text(verbatim: "…").font(AlokType.headline).foregroundStyle(AlokColors.textMuted)
+        }
+    }
+}
+
+/// New shot: Goal, then Meter. The Recommendation step arrives in the next pull request.
+private struct MeterFlow: View {
+    @EnvironmentObject var flow: FlowModel
+    @State var path: [Step] = []
+    let onExit: () -> Void
+
+    enum Step: Hashable { case meter, recommend }
+
+    var body: some View {
+        NavigationStack(path: $path) {
+            GoalScreen(selected: $flow.goal, onBack: onExit, onNext: { path.append(.meter) })
+                .toolbar(.hidden, for: .navigationBar)
+                .navigationDestination(for: Step.self) { step in
+                    switch step {
+                    case .meter:
+                        MeterScreen(goal: flow.goal, onBack: { path.removeLast() }, onDone: { reading in
+                            flow.setReading(reading)
+                            path.append(.recommend)
+                        })
+                        .toolbar(.hidden, for: .navigationBar)
+                        .toolbar(.hidden, for: .tabBar)
+                    case .recommend:
+                        ComingSoon()
+                            .toolbar(.hidden, for: .navigationBar)
+                    }
+                }
         }
     }
 }

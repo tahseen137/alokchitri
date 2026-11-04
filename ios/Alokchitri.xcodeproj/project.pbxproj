@@ -193,6 +193,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "আলোকচিত্রী";
+				INFOPLIST_KEY_NSCameraUsageDescription = "আলো মাপতে ক্যামেরা লাগবে। কোনো ছবি তোলা বা সেভ করা হয় না, শুধু আলোর মাত্রা পড়া হয়। To measure light we need the camera. Nothing is photographed or saved.";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -225,6 +226,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "আলোকচিত্রী";
+				INFOPLIST_KEY_NSCameraUsageDescription = "আলো মাপতে ক্যামেরা লাগবে। কোনো ছবি তোলা বা সেভ করা হয় না, শুধু আলোর মাত্রা পড়া হয়। To measure light we need the camera. Nothing is photographed or saved.";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
