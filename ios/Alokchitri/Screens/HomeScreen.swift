@@ -9,6 +9,7 @@ struct HomeScreen: View {
     /// Name and chips of the most recent saved recipe, if any. Wired with the Recipes screen.
     var lastRecipe: (name: String, chips: [String])? = nil
     let onNewShot: () -> Void
+    var onSettings: () -> Void = {}
 
     var body: some View {
         ScrollView {
@@ -19,6 +20,11 @@ struct HomeScreen: View {
                         Text(settings.t("app_name")).font(AlokType.title).foregroundStyle(AlokColors.text)
                     }
                     Spacer()
+                    Button(action: onSettings) {
+                        Image(systemName: "gearshape").font(.system(size: 20)).foregroundStyle(AlokColors.text)
+                            .frame(width: 48, height: 48).background(AlokColors.surface, in: Circle())
+                    }
+                    .accessibilityLabel(settings.t("cd_settings"))
                 }
                 .frame(height: 48)
 

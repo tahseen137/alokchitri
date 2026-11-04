@@ -8,7 +8,11 @@ struct RecommendScreen: View {
     let result: RecommendationResult
     let onBack: () -> Void
     let onShoot: () -> Void
+    let onSave: (String) -> Void
     let onHome: () -> Void
+
+    @State var showSave = false
+    @State var saved = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -36,12 +40,26 @@ struct RecommendScreen: View {
                     }
                 }
                 PrimaryButton(title: settings.t("rec_cta_pro"), systemImage: "camera", action: onShoot).padding(.top, 12)
+                SecondaryButton(title: settings.t(saved ? "recipes_saved" : "rec_save"), systemImage: saved ? "checkmark" : "bookmark", accent: saved) {
+                    showSave = true
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.top, 10)
+                .disabled(saved)
             }
         }
         .padding(.horizontal, AlokSpacing.screen)
         .padding(.top, 8)
         .padding(.bottom, 24)
         .alokScreen()
+        .sheet(isPresented: $showSave) {
+            SaveRecipeSheet(
+                name: settings.t(goal.titleKey),
+                onCancel: { showSave = false },
+                onSave: { name in onSave(name); saved = true; showSave = false }
+            )
+            .environmentObject(settings)
+        }
     }
 
     private func table(_ rec: Recommendation) -> some View {
