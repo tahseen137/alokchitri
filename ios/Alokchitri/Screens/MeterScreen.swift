@@ -21,7 +21,7 @@ struct MeterScreen: View {
 
             VStack(spacing: 0) {
                 HStack {
-                    BackBar(onBack: onBack).background(AlokColors.ground, in: Capsule())
+                    BackBar(onBack: onBack).fixedSize().background(AlokColors.ground, in: Capsule())
                     Spacer()
                     Text(settings.t(goal.titleKey))
                         .font(AlokType.label).foregroundStyle(AlokColors.text)
@@ -61,7 +61,7 @@ struct MeterScreen: View {
                 AlokColors.viewfinder
                 MeterReticle()
                 Text(settings.t("setup_no_camera")).font(AlokType.body).foregroundStyle(AlokColors.textMuted)
-                    .multilineTextAlignment(.center).padding(.horizontal, 32).padding(.top, 150)
+                    .multilineTextAlignment(.center).padding(.horizontal, 32).padding(.top, 220)
             }
         case .idle:
             AlokColors.viewfinder
