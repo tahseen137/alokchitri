@@ -43,10 +43,11 @@ struct MainTabs: View {
     @EnvironmentObject var settings: AppSettings
     @State var tab: AlokTab = .home
     @StateObject var flow = FlowModel()
+    @StateObject var recipes = RecipeStore()
 
     var body: some View {
         TabView(selection: $tab) {
-            HomeScreen(onNewShot: { flow.startNewShot(); tab = .meter })
+            HomeTab(onNewShot: { flow.startNewShot(); tab = .meter })
                 .tabItem { Label(settings.t("nav_home"), systemImage: "house") }
                 .tag(AlokTab.home)
             MeterFlow(onExit: { tab = .home })
@@ -56,10 +57,11 @@ struct MainTabs: View {
             ComingSoon()
                 .tabItem { Label(settings.t("nav_feedback"), systemImage: "photo") }
                 .tag(AlokTab.feedback)
-            ComingSoon()
+            RecipesTab(onNew: { flow.startNewShot(); tab = .meter })
                 .tabItem { Label(settings.t("nav_recipes"), systemImage: "bookmark") }
                 .tag(AlokTab.recipes)
         }
+        .environmentObject(recipes)
     }
 }
 
@@ -76,6 +78,7 @@ private struct ComingSoon: View {
 /// New shot: Goal, Meter, Recommendation, then our own Pro camera.
 private struct MeterFlow: View {
     @EnvironmentObject var flow: FlowModel
+    @EnvironmentObject var recipes: RecipeStore
     @State var path: [Step] = []
     let onExit: () -> Void
 
@@ -101,6 +104,9 @@ private struct MeterFlow: View {
                                 result: result,
                                 onBack: { path.removeLast() },
                                 onShoot: { path.append(.proCamera) },
+                                onSave: { name in
+                                    if case .success(let rec) = result { recipes.add(name: name, goal: flow.goal, recommendation: rec) }
+                                },
                                 onHome: { path = []; onExit() }
                             )
                             .toolbar(.hidden, for: .navigationBar)
@@ -117,6 +123,47 @@ private struct MeterFlow: View {
                                 .toolbar(.hidden, for: .tabBar)
                         }
                     }
+                }
+        }
+    }
+}
+
+/// Home, with Settings one tap away from the gear.
+private struct HomeTab: View {
+    @EnvironmentObject var recipes: RecipeStore
+    @State var showSettings = false
+    let onNewShot: () -> Void
+
+    var body: some View {
+        NavigationStack {
+            HomeScreen(
+                lastRecipe: recipes.last.map { (name: $0.name, chips: $0.recommendation.chips) },
+                onNewShot: onNewShot,
+                onSettings: { showSettings = true }
+            )
+            .toolbar(.hidden, for: .navigationBar)
+            .navigationDestination(isPresented: $showSettings) {
+                SettingsScreen(phoneName: DeviceProbe.phoneName(), onBack: { showSettings = false })
+                    .toolbar(.hidden, for: .navigationBar)
+                    .toolbar(.hidden, for: .tabBar)
+            }
+        }
+    }
+}
+
+/// Saved recipes; "shoot" opens the Pro camera with a recipe's settings.
+private struct RecipesTab: View {
+    @State var shooting: SavedRecipe?
+    let onNew: () -> Void
+
+    var body: some View {
+        NavigationStack {
+            RecipesScreen(onNew: onNew, onUse: { shooting = $0 })
+                .toolbar(.hidden, for: .navigationBar)
+                .navigationDestination(item: $shooting) { recipe in
+                    ProCameraScreen(goal: recipe.goal, rec: recipe.recommendation, onBack: { shooting = nil })
+                        .toolbar(.hidden, for: .navigationBar)
+                        .toolbar(.hidden, for: .tabBar)
                 }
         }
     }
