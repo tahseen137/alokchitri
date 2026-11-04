@@ -9,13 +9,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.PhoneAndroid
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -23,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.alokchitri.app.R
 import com.alokchitri.app.ui.components.AlokCard
@@ -43,6 +47,10 @@ fun SetupScreen(
     onBack: () -> Unit,
     onConfirm: () -> Unit,
     onNotMyPhone: () -> Unit,
+    /** False when Camera2 hides manual control from us; the user can then say their camera app has Pro mode. */
+    cameraReportsPro: Boolean = true,
+    proModeConfirmed: Boolean = false,
+    onProModeConfirmedChange: (Boolean) -> Unit = {},
 ) {
     Column(Modifier.fillMaxSize().background(AlokColors.Ground).padding(horizontal = 20.dp).padding(top = 8.dp, bottom = 28.dp)) {
         BackBar(onBack, title = stringResource(R.string.setup_step))
@@ -88,15 +96,42 @@ fun SetupScreen(
         }
 
         Spacer(Modifier.height(16.dp))
-        Row(Modifier.padding(horizontal = 4.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Icon(Icons.Outlined.Info, null, tint = AlokColors.TextMuted, modifier = Modifier.padding(top = 3.dp).size(22.dp))
-            Text(stringResource(R.string.setup_note), style = MaterialTheme.typography.bodySmall.copy(fontSize = MaterialTheme.typography.bodyMedium.fontSize), color = AlokColors.TextMuted)
+        if (cameraReportsPro) {
+            Row(Modifier.padding(horizontal = 4.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Icon(Icons.Outlined.Info, null, tint = AlokColors.TextMuted, modifier = Modifier.padding(top = 3.dp).size(22.dp))
+                Text(stringResource(R.string.setup_note), style = MaterialTheme.typography.bodySmall.copy(fontSize = MaterialTheme.typography.bodyMedium.fontSize), color = AlokColors.TextMuted)
+            }
+        } else {
+            ProModeConfirm(proModeConfirmed, onProModeConfirmedChange)
         }
 
         Spacer(Modifier.weight(1f))
         PrimaryButton(stringResource(R.string.setup_cta), onConfirm)
         TextButton(onClick = onNotMyPhone, modifier = Modifier.fillMaxWidth().height(48.dp)) {
             Text(stringResource(R.string.setup_wrong), style = MaterialTheme.typography.labelMedium, color = AlokColors.TextMuted)
+        }
+    }
+}
+
+/**
+ * Phones like OnePlus and OPPO hide manual control from other apps, yet their own camera app has Pro mode,
+ * and that is where our settings are entered. One switch lets the user tell us so.
+ */
+@Composable
+fun ProModeConfirm(confirmed: Boolean, onChange: (Boolean) -> Unit, modifier: Modifier = Modifier) {
+    AlokCard(modifier.fillMaxWidth(), padding = 0.dp, borderColor = if (confirmed) AlokColors.Green else AlokColors.Amber) {
+        Row(
+            Modifier.fillMaxWidth().heightIn(min = 56.dp)
+                .toggleable(confirmed, role = Role.Switch, onValueChange = onChange)
+                .padding(horizontal = 18.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(stringResource(R.string.pro_confirm_title), style = MaterialTheme.typography.bodyLarge, color = AlokColors.Text)
+                Text(stringResource(R.string.pro_confirm_body), style = MaterialTheme.typography.bodySmall, color = AlokColors.TextMuted)
+            }
+            Switch(confirmed, onCheckedChange = null)
         }
     }
 }

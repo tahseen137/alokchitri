@@ -23,6 +23,8 @@
     <string name="setup_manual">ম্যানুয়াল কন্ট্রোল</string>
     <string name="setup_available">আছে</string>
     <string name="setup_unavailable">নেই</string>
+    <string name="pro_confirm_title">আমার ক্যামেরা অ্যাপে Pro মোড আছে</string>
+    <string name="pro_confirm_body">OnePlus, OPPO-র মতো কিছু ফোন অন্য অ্যাপকে ম্যানুয়াল কন্ট্রোল দেখায় না। আপনার ক্যামেরা অ্যাপে Pro বা ম্যানুয়াল মোড থাকলে এটি চালু করুন।</string>
     <string name="setup_note">মেনুর নাম যেমন আপনার ফোনে আছে, ঠিক সেই নামেই সেটিং দেখাব, যাতে খুঁজে পেতে সময় না লাগে।</string>
     <string name="setup_cta">ঠিক আছে, এগোই</string>
     <string name="setup_wrong">এটা আমার ফোন নয়</string>
@@ -93,6 +95,7 @@
     <string name="rec_where">কোথায় পাব?</string>
     <string name="manual_title">আপনার ফোন ম্যানুয়াল সেটিং দেয় না</string>
     <string name="manual_body">এই ফোনে ISO বা শাটার নিজে ঠিক করা যায় না। Auto বা নাইট মোড ব্যবহার করুন।</string>
+    <string name="manual_have_pro">আমার ক্যামেরায় Pro মোড আছে</string>
     <string name="format_raw">RAW</string>
     <string name="format_jpeg">JPG</string>
     <string name="card_progress_fmt" formatted="true">%1$s / %2$s</string>

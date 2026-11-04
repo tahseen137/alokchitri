@@ -32,6 +32,10 @@ data class FlowState(
     val brand: PhoneBrand? = null,
     /** Sample limits until the Camera2 probe answers, and if the phone reports no back camera at all. */
     val device: DeviceLimits = SampleData.device,
+    /** Camera2 itself reports manual ISO/shutter. False on phones that hide it from other apps (e.g. OnePlus). */
+    val cameraReportsPro: Boolean = true,
+    /** The user told us their camera app has Pro mode; only matters when [cameraReportsPro] is false. */
+    val proModeConfirmed: Boolean = false,
     val goal: ShotGoal = ShotGoal.INDOOR_LOW_LIGHT,
     /** Live brightness. 5.0 = dim room, so the screens have something sensible before the camera is wired. */
     val ev100: Double = 5.0,
@@ -63,7 +67,15 @@ class FlowViewModel(app: Application) : AndroidViewModel(app) {
             val probed = withContext(Dispatchers.Default) { runCatching { DeviceProbe(app).probe() }.getOrNull() }
             val name = prefs.phoneNameOverride ?: probed?.phoneName ?: DeviceProbe.buildName()
             probedDevice = probed?.limits ?: _state.value.device
-            _state.update { it.copy(phoneName = name, brand = PhoneBrand.guess(name), device = effectiveDevice()) }
+            _state.update {
+                it.copy(
+                    phoneName = name,
+                    brand = PhoneBrand.guess(name),
+                    device = effectiveDevice(),
+                    cameraReportsPro = probedDevice.manualSupported,
+                    proModeConfirmed = prefs.proModeConfirmed,
+                )
+            }
         }
     }
 
@@ -79,8 +91,14 @@ class FlowViewModel(app: Application) : AndroidViewModel(app) {
         _state.update { it.copy(device = effectiveDevice()) }
     }
 
+    /** Setup and "no manual control" screens: the user says their camera app has (or hasn't) got Pro mode. */
+    fun setProModeConfirmed(enabled: Boolean) {
+        prefs.proModeConfirmed = enabled
+        _state.update { it.copy(device = effectiveDevice(), proModeConfirmed = enabled) }
+    }
+
     private fun effectiveDevice(): DeviceLimits =
-        if (simulateProMode) probedDevice.copy(manualSupported = true) else probedDevice
+        if (simulateProMode || prefs.proModeConfirmed) probedDevice.copy(manualSupported = true) else probedDevice
 
     fun confirmSetup() {
         prefs.setupDone = true

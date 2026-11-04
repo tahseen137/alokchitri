@@ -23,6 +23,8 @@
     <string name="setup_manual">Manual control</string>
     <string name="setup_available">Available</string>
     <string name="setup_unavailable">Not available</string>
+    <string name="pro_confirm_title">My camera app has Pro mode</string>
+    <string name="pro_confirm_body">Some phones, like OnePlus and OPPO, hide manual control from other apps. Turn this on if your camera app has a Pro or Manual mode.</string>
     <string name="setup_note">We show settings with the same menu names your phone uses, so they are quick to find.</string>
     <string name="setup_cta">Looks right</string>
     <string name="setup_wrong">This isn\'t my phone</string>
@@ -93,6 +95,7 @@
     <string name="rec_where">Where do I find it?</string>
     <string name="manual_title">Your phone doesn\'t allow manual settings</string>
     <string name="manual_body">This phone doesn\'t let you set ISO or shutter yourself. Use Auto or Night mode.</string>
+    <string name="manual_have_pro">My camera does have Pro mode</string>
     <string name="format_raw">RAW</string>
     <string name="format_jpeg">JPG</string>
     <string name="card_progress_fmt" formatted="true">%1$s / %2$s</string>

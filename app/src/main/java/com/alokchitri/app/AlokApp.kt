@@ -213,6 +213,9 @@ fun AlokApp(
                         nav.navigate(Routes.HOME) { popUpTo(Routes.WELCOME) { inclusive = true } }
                     },
                     onNotMyPhone = { showPhonePicker = true },
+                    cameraReportsPro = state.cameraReportsPro,
+                    proModeConfirmed = state.proModeConfirmed,
+                    onProModeConfirmedChange = flow::setProModeConfirmed,
                 )
             }
 
@@ -258,6 +261,8 @@ fun AlokApp(
                     onWhereToFind = { nav.navigate(Routes.HOWTO) },
                     // A plain pop: navigateTab would save this shot's screens and restore them straight back.
                     onHome = { if (!nav.popBackStack(Routes.HOME, inclusive = false)) nav.navigate(Routes.HOME) },
+                    // Turning it on recomputes state.result, so this screen switches straight to the settings.
+                    onConfirmProMode = { flow.setProModeConfirmed(true) },
                 )
             }
 

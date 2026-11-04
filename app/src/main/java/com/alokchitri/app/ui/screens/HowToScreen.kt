@@ -44,7 +44,9 @@ import com.alokchitri.app.ui.theme.AlokColors
 enum class PhoneBrand(val displayName: String, private val aliases: List<String>) {
     XIAOMI("Xiaomi", listOf("xiaomi", "redmi", "poco")),
     SAMSUNG("Samsung", listOf("samsung", "galaxy")),
-    REALME("Realme", listOf("realme"));
+    REALME("Realme", listOf("realme")),
+    // OPPO ships the same ColorOS camera app, Pro mode included.
+    ONEPLUS("OnePlus", listOf("oneplus", "oppo"));
 
     companion object {
         /** Brand with a how-to guide whose name or sub-brand appears in [phoneName]; null if none. */
