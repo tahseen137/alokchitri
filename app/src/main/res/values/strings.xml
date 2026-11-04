@@ -196,4 +196,14 @@
     <string name="manual_tip_night">আলো কম হলে ক্যামেরার “Night” মোড ব্যবহার করুন, আর ছবি ওঠা শেষ না হওয়া পর্যন্ত ফোন স্থির রাখুন।</string>
     <string name="manual_tip_tap">বিষয়ের ওপর আঙুল দিয়ে ট্যাপ করুন, ফোকাস ও আলো সেখানে মিলবে। পাশে সূর্যের চিহ্ন দেখালে ওপরে-নিচে টেনে উজ্জ্বলতা ঠিক করুন।</string>
     <string name="manual_tip_steady">কনুই শরীরে চেপে ধরুন বা দেয়ালে ঠেস দিন। জানালার আলো মুখের দিকে রাখুন।</string>
+    <!-- One-tap Pro setup: the in-app camera with the recommendation applied -->
+    <string name="rec_cta_pro">এক ট্যাপে Pro সেটিং দিয়ে ছবি তুলুন</string>
+    <string name="pro_title">Pro সেটিং দেওয়া হয়েছে। ফ্রেম ঠিক করে শাটার চাপুন।</string>
+    <string name="pro_hold_still">Pro সেটিং দেওয়া হয়েছে। শাটার চাপার পর ছবি ওঠা পর্যন্ত ফোন স্থির রাখুন।</string>
+    <string name="pro_auto_exposure">এই ফোন অন্য অ্যাপকে ISO আর শাটার বদলাতে দেয় না। আলো ফোন নিজেই মিলাবে, বাকি সেটিং দেওয়া হয়েছে।</string>
+    <string name="pro_shutter_cd">ছবি তুলুন</string>
+    <string name="pro_saved">ছবি গ্যালারিতে সেভ হয়েছে</string>
+    <string name="pro_failed">ছবি তোলা যায়নি। আবার চেষ্টা করুন।</string>
+    <string name="pro_view_cd">তোলা ছবি দেখুন</string>
+    <string name="pro_storage_needed">ছবি সেভ করতে স্টোরেজের অনুমতি লাগবে।</string>
 </resources>

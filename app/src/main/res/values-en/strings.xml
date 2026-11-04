@@ -196,4 +196,14 @@
     <string name="manual_tip_night">In low light, use your camera\'s “Night” mode and keep the phone still until the photo is done.</string>
     <string name="manual_tip_tap">Tap your subject to set focus and brightness there. If a sun icon appears, slide it up or down to adjust brightness.</string>
     <string name="manual_tip_steady">Brace your elbows against your body or lean on a wall. Face window light towards your subject.</string>
+    <!-- One-tap Pro setup: the in-app camera with the recommendation applied -->
+    <string name="rec_cta_pro">Shoot with these settings</string>
+    <string name="pro_title">Pro settings applied. Frame your shot and press the shutter.</string>
+    <string name="pro_hold_still">Pro settings applied. After you press the shutter, keep the phone still until the photo is done.</string>
+    <string name="pro_auto_exposure">This phone doesn\'t let other apps set ISO and shutter. It will set the exposure itself; everything else is applied.</string>
+    <string name="pro_shutter_cd">Take photo</string>
+    <string name="pro_saved">Photo saved to your gallery</string>
+    <string name="pro_failed">Couldn\'t take the photo. Try again.</string>
+    <string name="pro_view_cd">View the photo</string>
+    <string name="pro_storage_needed">Storage permission is needed to save the photo.</string>
 </resources>

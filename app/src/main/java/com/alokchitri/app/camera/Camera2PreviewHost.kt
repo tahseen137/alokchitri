@@ -120,10 +120,10 @@ fun Camera2PreviewHost(
     }
 }
 
-private fun hasCameraPermission(context: Context) =
+internal fun hasCameraPermission(context: Context) =
     ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
 
-private fun appSettingsIntent(context: Context) =
+internal fun appSettingsIntent(context: Context) =
     Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
@@ -254,19 +254,21 @@ private class MeterSession(
         return MeteringRectangle(Rect(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2), MeteringRectangle.METERING_WEIGHT_MAX)
     }
 
-    /**
-     * TextureView stretches the buffer to fill the view. The sensor buffer is landscape and shown rotated in
-     * this portrait UI, so scale it back to its own aspect ratio and crop the overflow from the centre.
-     */
-    private fun applyCenterCrop() {
-        val size = previewSize ?: return
-        val vw = textureView.width.toFloat()
-        val vh = textureView.height.toFloat()
-        if (vw == 0f || vh == 0f) return
-        val contentAspect = size.height.toFloat() / size.width // width / height once rotated to portrait
-        val matrix = Matrix()
-        if (vw / vh > contentAspect) matrix.setScale(1f, (vw / contentAspect) / vh, vw / 2, vh / 2)
-        else matrix.setScale((vh * contentAspect) / vw, 1f, vw / 2, vh / 2)
-        textureView.setTransform(matrix)
-    }
+    private fun applyCenterCrop() = textureView.centerCrop(previewSize)
+}
+
+/**
+ * TextureView stretches the buffer to fill the view. The sensor buffer is landscape and shown rotated in
+ * this portrait UI, so scale it back to its own aspect ratio and crop the overflow from the centre.
+ */
+internal fun TextureView.centerCrop(size: Size?) {
+    size ?: return
+    val vw = width.toFloat()
+    val vh = height.toFloat()
+    if (vw == 0f || vh == 0f) return
+    val contentAspect = size.height.toFloat() / size.width // width / height once rotated to portrait
+    val matrix = Matrix()
+    if (vw / vh > contentAspect) matrix.setScale(1f, (vw / contentAspect) / vh, vw / 2, vh / 2)
+    else matrix.setScale((vh * contentAspect) / vw, 1f, vw / 2, vh / 2)
+    setTransform(matrix)
 }
