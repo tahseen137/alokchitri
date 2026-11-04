@@ -24,4 +24,12 @@ cd ios/AlokEngine
 swift test
 ```
 
-Needs Swift 6 (Xcode 16 or newer, or just the Command Line Tools). The tests use Swift Testing, not XCTest.
+Needs Swift 6 and Xcode 16 or newer. The tests use Swift Testing, not XCTest.
+
+With only the Command Line Tools (no Xcode), point SwiftPM at their Testing framework:
+
+```sh
+CLT=/Library/Developer/CommandLineTools/Library/Developer
+swift test -Xswiftc -F -Xswiftc $CLT/Frameworks \
+  -Xlinker -rpath -Xlinker $CLT/Frameworks -Xlinker -rpath -Xlinker $CLT/usr/lib
+```
