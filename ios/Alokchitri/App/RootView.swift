@@ -46,6 +46,7 @@ struct MainTabs: View {
     @StateObject var recipes = RecipeStore()
     @StateObject var feedback = FeedbackModel()
     @StateObject var store = PurchaseStore()
+    @StateObject var ads = RewardedAds()
     @State var showUpgrade = false
 
     var body: some View {
@@ -57,7 +58,11 @@ struct MainTabs: View {
                 .environmentObject(flow)
                 .tabItem { Label(settings.t("nav_meter"), systemImage: "camera.aperture") }
                 .tag(AlokTab.meter)
-            FeedbackScreen(model: feedback, phone: DeviceProbe.phoneName(), onTopUp: { showUpgrade = true })
+            FeedbackScreen(model: feedback, phone: DeviceProbe.phoneName(), onWatchAd: store.unlocked ? nil : { language, phone, shown in
+                    ads.start()
+                    shown(ads.show { feedback.onAdRewarded(language: language, phone: phone) })
+                }, onTopUp: { showUpgrade = true })
+                .onAppear { if !store.unlocked { ads.start() } }
                 .tabItem { Label(settings.t("nav_feedback"), systemImage: "photo") }
                 .tag(AlokTab.feedback)
             RecipesTab(onNew: { flow.startNewShot(); tab = .meter })

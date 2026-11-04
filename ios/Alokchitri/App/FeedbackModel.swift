@@ -58,6 +58,14 @@ final class FeedbackModel: ObservableObject {
         task = Task { await ask(language: language, phone: phone) }
     }
 
+    /// A rewarded ad was watched: one more feedback for today. If the user was stuck on "out of quota" with a
+    /// photo, ask for its feedback right away.
+    func onAdRewarded(language: String, phone: String?) {
+        quota.addBonus()
+        refreshQuota()
+        if case .outOfQuota = state { retry(language: language, phone: phone) }
+    }
+
     func refreshQuota() {
         left = quota.available
         leftToday = quota.leftToday
