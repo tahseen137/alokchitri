@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  iPhone-only wording. Same format as Android's strings.xml: each <string> has a Bangla value (bn) and an
+  English value (en). A key here replaces the Android string of the same name, because the iPhone app has its
+  own Pro camera and no floating card. NEEDS BANGLA REVIEW before release.
+  After editing, run: python3 ios/scripts/import_android_strings.py
+-->
+<resources>
+    <string name="welcome_title" bn="iPhone-এ Pro ক্যামেরা, সহজ বাংলায়" en="A Pro camera for your iPhone, made simple"/>
+    <string name="welcome_body" bn="কোন ছবির জন্য কোন সেটিং দিতে হবে, আমরা বলে দেব। তারপর আমাদের Pro ক্যামেরা নিজেই সেটিং বসিয়ে দেবে।" en="We tell you which settings each shot needs, then our Pro camera sets them for you."/>
+    <string name="setup_pro_found" bn="ম্যানুয়াল কন্ট্রোল পাওয়া গেছে" en="Manual control found"/>
+    <string name="setup_pro_missing" bn="এই ক্যামেরায় ম্যানুয়াল কন্ট্রোল পাওয়া যায়নি" en="This camera has no manual control"/>
+    <string name="setup_note" bn="সেটিং আমাদের Pro ক্যামেরা নিজেই বসিয়ে দেবে, আপনাকে কোনো মেনু খুঁজতে হবে না।" en="Our Pro camera applies the settings for you, so there are no menus to hunt for."/>
+    <string name="setup_no_camera" bn="ক্যামেরা পাওয়া যায়নি। আসল iPhone-এ অ্যাপটি চালান।" en="No camera found. Run the app on a real iPhone."/>
+</resources>
