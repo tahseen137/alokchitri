@@ -55,9 +55,10 @@ final class AppSettings: ObservableObject {
 
     /// Digits follow the language: ২ in Bangla, 2 in English.
     func number(_ n: Int) -> String {
-        let f = NumberFormatter()
-        f.locale = language.locale
-        return f.string(from: NSNumber(value: n)) ?? String(n)
+        // Mapped by hand: NumberFormatter can still return Latin digits for bn_BD on some systems.
+        guard language == .bn else { return String(n) }
+        let bangla = Array("০১২৩৪৫৬৭৮৯")
+        return String(String(n).map { $0.wholeNumberValue.map { bangla[$0] } ?? $0 })
     }
 
     private static func bundle(for language: AppLanguage) -> Bundle {

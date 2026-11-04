@@ -100,11 +100,12 @@ enum AlokAppearance {
         tab.backgroundColor = UIColor(AlokColors.surface)
         tab.shadowColor = UIColor(AlokColors.outline)
         let item = UITabBarItemAppearance()
-        let font = UIFont(name: AlokFonts.name(.medium), size: 13) ?? .systemFont(ofSize: 13, weight: .medium)
+        // Colours only: the system font keeps its own line height. Hind Siliguri is taller (Bangla vowel marks)
+        // and made the labels sit on top of the icons in the iOS 27 tab bar.
         item.normal.iconColor = UIColor(AlokColors.textMuted)
-        item.normal.titleTextAttributes = [.foregroundColor: UIColor(AlokColors.textMuted), .font: font]
+        item.normal.titleTextAttributes = [.foregroundColor: UIColor(AlokColors.textMuted)]
         item.selected.iconColor = UIColor(AlokColors.amber)
-        item.selected.titleTextAttributes = [.foregroundColor: UIColor(AlokColors.text), .font: font]
+        item.selected.titleTextAttributes = [.foregroundColor: UIColor(AlokColors.text)]
         tab.stackedLayoutAppearance = item
         tab.inlineLayoutAppearance = item
         tab.compactInlineLayoutAppearance = item
