@@ -1,10 +1,10 @@
 import Foundation
-import XCTest
+import Testing
 @testable import AlokEngine
 
 /// Checks the Swift port against engine/golden/recommendations.txt, which the Android engine's
 /// GoldenVectorsTest writes. Kotlin is the source of truth: regenerate there, never here.
-final class GoldenVectorsTests: XCTestCase {
+struct GoldenVectorsTests {
     /// Keep this list identical to GoldenVectorsTest.kt.
     static let devices: [(String, DeviceLimits)] = [
         ("phone", DeviceLimits(isoMin: 50, isoMax: 6400, shutterMinSeconds: 1.0 / 4000, shutterMaxSeconds: 30.0, aperture: 1.8, lenses: [.main, .ultraWide, .tele], rawSupported: true, hasOis: false)),
@@ -48,7 +48,7 @@ final class GoldenVectorsTests: XCTestCase {
         return s + "\n"
     }
 
-    func testMatchesTheAndroidEngine() throws {
+    @Test func matchesTheAndroidEngine() {
         let url = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent() // AlokEngineTests
             .deletingLastPathComponent() // Tests
@@ -57,16 +57,16 @@ final class GoldenVectorsTests: XCTestCase {
             .deletingLastPathComponent() // repo root
             .appendingPathComponent("engine/golden/recommendations.txt")
         guard let expected = try? String(contentsOf: url, encoding: .utf8) else {
-            XCTFail("Missing \(url.path). Run ./gradlew :engine:test from the repo root to generate it.")
+            Issue.record("Missing \(url.path). Run ./gradlew :engine:test from the repo root to generate it.")
             return
         }
         let actual = Self.render()
         if actual == expected { return }
         let a = actual.split(separator: "\n"), e = expected.split(separator: "\n")
         for (i, (x, y)) in zip(a, e).enumerated() where x != y {
-            XCTFail("Line \(i + 1) differs\n  Android: \(y)\n  iOS:     \(x)")
+            Issue.record("Line \(i + 1) differs\n  Android: \(y)\n  iOS:     \(x)")
             return
         }
-        XCTFail("Line counts differ: Android \(e.count), iOS \(a.count)")
+        Issue.record("Line counts differ: Android \(e.count), iOS \(a.count)")
     }
 }

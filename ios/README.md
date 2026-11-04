@@ -24,4 +24,4 @@ cd ios/AlokEngine
 swift test
 ```
 
-Needs Xcode 15 or newer (or the Xcode command line tools).
+Needs Swift 6 (Xcode 16 or newer, or just the Command Line Tools). The tests use Swift Testing, not XCTest.

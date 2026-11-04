@@ -1,6 +1,7 @@
-// swift-tools-version:5.9
+// swift-tools-version:6.0
 // The light-meter and recommendation rules, ported from the Android `engine` module.
 // Pure Swift with no UIKit or AVFoundation, so `swift test` runs on any Mac without a simulator.
+// Tests use Swift Testing (not XCTest), which ships with the Command Line Tools as well as Xcode.
 import PackageDescription
 
 let package = Package(
@@ -10,5 +11,6 @@ let package = Package(
     targets: [
         .target(name: "AlokEngine"),
         .testTarget(name: "AlokEngineTests", dependencies: ["AlokEngine"]),
-    ]
+    ],
+    swiftLanguageModes: [.v5]
 )
